@@ -1,5 +1,5 @@
 #include <list>
-#include "tPosition.hpp"
+#include "tCharge.hpp"
 #include "skills/skillSet.h"
 #include "rapidjson/document.h"
 #include "rapidjson/writer.h"
@@ -11,26 +11,26 @@
 namespace Strategy
 {
 
-    TPosition::TPosition(int botID) :
+    TCharge::TCharge(int botID) :
       Tactic(botID)
     {
 
     } // TPosition
     
 
-    TPosition::~TPosition()
+    TCharge::~TCharge()
     { } // ~TPosition
-    bool TPosition::isCompleted(const BeliefState &bs) const {
+    bool TCharge::isCompleted(const BeliefState &bs) const {
       return false;
     }
-    bool TPosition::isActiveTactic(void) const
+    bool TCharge::isActiveTactic(void) const
     {
       return false;
     }
 //CHOOSEbEST bOT AND the giving of parameters for going to the required point needs to be entered
 //Choose best bot also needs to get the params that the tactic has in order to choose the best bot....
 
-    int TPosition::chooseBestBot(const BeliefState &state, std::list<int>& freeBots, const Param& tParam, int prevID) const
+    int TCharge::chooseBestBot(const BeliefState &state, std::list<int>& freeBots, const Param& tParam, int prevID) const
     {
       int minv   = *(freeBots.begin());
       int mindis = 1000000000;
@@ -52,19 +52,15 @@ namespace Strategy
       return minv;
     } // chooseBestBot
 
-    gr_Robot_Command TPosition::execute(const BeliefState &state, const Param& tParam)
+    gr_Robot_Command TCharge::execute(const BeliefState &state, const Param& tParam)
     {
       // Select the skill to the executed next
-//      printf("botpos x:%d\ty:%d\n", state->homePos[botID].x, state->homePos[botID].y);
 
-      Strategy::SkillSet::SkillID sID = SkillSet::GoToPoint;
+      Strategy::SkillSet::SkillID sID = SkillSet::DribbleToPoint;
       SkillSet::SParam sParam;
-      sParam.GoToPointP.x             = tParam.PositionP.x ;
-      sParam.GoToPointP.y             = tParam.PositionP.y ;
-      sParam.GoToPointP.align         = tParam.PositionP.align;
-      sParam.GoToPointP.finalslope    = tParam.PositionP.finalSlope ;
-      sParam.GoToPointP.finalVelocity = tParam.PositionP.finalVelocity;
-
+      sParam.DribbleToPointP.x             = HALF_FIELD_MAXX;
+      sParam.DribbleToPointP.y             = (OPP_GOAL_MAXY+OPP_GOAL_MINY)/2;
+      
       // Execute the selected skill
       Strategy::SkillSet *ptr = SkillSet::instance();
       return ptr->executeSkill(sID, sParam, state, botID);
@@ -74,7 +70,7 @@ namespace Strategy
       //   tState = COMPLETED;
       // }
     }
-    Tactic::Param TPosition::paramFromJSON(string json) {
+    Tactic::Param TCharge::paramFromJSON(string json) {
       using namespace rapidjson;
       Tactic::Param tParam;
       Document d;
@@ -87,7 +83,7 @@ namespace Strategy
       return tParam;
     }
 
-    string TPosition::paramToJSON(Tactic::Param tParam) {
+    string TCharge::paramToJSON(Tactic::Param tParam) {
       using namespace rapidjson;
       StringBuffer buffer;
       Writer<StringBuffer> w(buffer);

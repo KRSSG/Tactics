@@ -1,5 +1,5 @@
-#ifndef TPOSITION_HPP
-#define TPOSITION_HPP
+#ifndef TSHOOT_HPP
+#define TSHOOT_HPP
 #include "tactic.h"
 #include "skills/skillSet.h"
 #include "krssg_ssl_msgs/BeliefState.h"
@@ -9,13 +9,13 @@
 #include "tactic_factory.h"
 namespace Strategy  
 {
-  class TPosition: public Tactic
+  class TShoot: public Tactic
   {
   public:
 
-    TPosition(int botID);
+    TShoot(int botID);
 
-    ~TPosition();
+    ~TShoot();
     virtual bool isCompleted(const BeliefState &bs) const ;
 
     virtual bool isActiveTactic(void) const;
@@ -23,6 +23,8 @@ namespace Strategy
 //Choose best bot also needs to get the params that the tactic has in order to choose the best bot....
 
     virtual int chooseBestBot(const BeliefState &bs, std::list<int>& freeBots, const Param& tParam, int prevID = -1) const;
+
+    virtual Vector2D<int> getOppGoalie(const BeliefState &state);
    
 
     virtual gr_Robot_Command execute(const BeliefState &state, const Param& tParam);
@@ -30,8 +32,8 @@ namespace Strategy
     virtual Tactic::Param paramFromJSON(string json);
     virtual string paramToJSON(Tactic::Param p);
     
-  }; // class TPosition
+  }; // class TShoot
   // registering tactic with factory:
-  REGISTER_TACTIC(TPosition)
+  REGISTER_TACTIC(TShoot)
 } // namespace Strategy
 #endif

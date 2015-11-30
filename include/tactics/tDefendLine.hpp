@@ -1,5 +1,5 @@
-#ifndef TPOSITION_HPP
-#define TPOSITION_HPP
+#ifndef TDEFENDLINE_HPP
+#define TDEFENDLINE_HPP
 #include "tactic.h"
 #include "skills/skillSet.h"
 #include "krssg_ssl_msgs/BeliefState.h"
@@ -9,13 +9,13 @@
 #include "tactic_factory.h"
 namespace Strategy  
 {
-  class TPosition: public Tactic
+  class TDefendLine: public Tactic
   {
   public:
 
-    TPosition(int botID);
+    TDefendLine(int botID);
 
-    ~TPosition();
+    ~TDefendLine();
     virtual bool isCompleted(const BeliefState &bs) const ;
 
     virtual bool isActiveTactic(void) const;
@@ -30,8 +30,8 @@ namespace Strategy
     virtual Tactic::Param paramFromJSON(string json);
     virtual string paramToJSON(Tactic::Param p);
     
-  }; // class TPosition
+  }; // class TDefendLine
   // registering tactic with factory:
-  REGISTER_TACTIC(TPosition)
+  REGISTER_TACTIC(TDefendLine)
 } // namespace Strategy
 #endif

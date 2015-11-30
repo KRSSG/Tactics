@@ -1,5 +1,5 @@
 #include <list>
-#include "tPosition.hpp"
+#include "tBlock.hpp"
 #include "skills/skillSet.h"
 #include "rapidjson/document.h"
 #include "rapidjson/writer.h"
@@ -8,6 +8,8 @@
 #include <stdio.h>
 #include <ssl_common/geometry.hpp>
 #include <skills/skillSet.h>
+
+
 namespace Strategy
 {
 
@@ -106,3 +108,71 @@ namespace Strategy
       return buffer.GetString();
     }
 } // namespace Strategy
+
+
+
+
+
+namespace Strategy
+{
+	
+	TBlock::TBlock(int botID) :
+      Tactic(botID)
+    {
+
+    } // TBlock
+    
+
+    TBlock::~TBlock()
+    { } // ~TBlock
+    bool TBlock::isCompleted(const BeliefState &bs) const {
+      return false;
+    }
+    bool TBlock::isActiveTactic(void) const
+    {
+      return false;
+    }
+
+
+    
+    int tBlock::chooseBestBot(const BeliefState &bs, std::list<int>& freeBots, const Param& tParam) const
+		{
+			int minv = *(freeBots.begin());
+      		int mindis = Vector2D<int>::dist(state.homePos[minv],state.ballPos);
+			for (std::list<int>::iterator it = freeBots.begin(); it != freeBots.end(); ++it)
+			{
+				// TODO make the bot choosing process more sophisticated, the logic below returns the 1st available bot    
+        		if(Vector2D<int>::dist(state.homePos[*it],state.ballPos)<mindis)
+				{
+					mindis = Vector2D<int>::dist(state.homePos[*it],state.ballPos);;
+					minv = *it;
+				}
+			}
+			return minv;
+		} // chooseBestBot
+    void execute(const Param& tParam)
+		{
+			Strategy::SkillSet::SkillID sID = SkillSet::GoToPoint;
+      		SkillSet::SParam sParam;
+      		sParam.GoToPointP.x           = state->ballPos.x + tParam.BlockP.side*tParam.BlockP.dist;
+	      	sParam.GoToPointP.y             = tate->ballPos.y + tParam.BlockP.side*tParam.BlockP.dist;
+	      	//sParam.GoToPointP.align         = tParam.PositionP.align;
+	      	//sParam.GoToPointP.finalslope    = tParam.PositionP.finalSlope ;
+	      	//sParam.GoToPointP.finalVelocity = tParam.PositionP.finalVelocity;
+	      	Strategy::SkillSet *ptr = SkillSet::instance();
+      		return ptr->executeSkill(sID, sParam, state, botID);
+		skillSet->executeSkill(sID, sParam);
+		if(state->homePos[botID].x>/*Opp_D*/2300)   //end conditions
+        {
+          Strategy::SkillSet::SkillID sID = SkillSet::Stop;
+          //tState = COMPLETED;
+        }
+        
+
+			// Execute the selected skill
+			
+		}
+	
+} // namespace Strategy
+
+#endif // TTBLOCK_HPP

@@ -1,5 +1,5 @@
 #include <list>
-#include "tPosition.hpp"
+#include "tPositionForPenalty.hpp"
 #include "skills/skillSet.h"
 #include "rapidjson/document.h"
 #include "rapidjson/writer.h"
@@ -11,26 +11,26 @@
 namespace Strategy
 {
 
-    TPosition::TPosition(int botID) :
+    TPositionForPenalty::TPositionForPenalty(int botID) :
       Tactic(botID)
     {
 
-    } // TPosition
+    } // TPositionForPenalty
     
 
-    TPosition::~TPosition()
-    { } // ~TPosition
-    bool TPosition::isCompleted(const BeliefState &bs) const {
+    TPositionForPenalty::~TPositionForPenalty()
+    { } // ~TPositionForPenalty
+    bool TPositionForPenalty::isCompleted(const BeliefState &bs) const {
       return false;
     }
-    bool TPosition::isActiveTactic(void) const
+    bool TPositionForPenalty::isActiveTactic(void) const
     {
       return false;
     }
 //CHOOSEbEST bOT AND the giving of parameters for going to the required point needs to be entered
 //Choose best bot also needs to get the params that the tactic has in order to choose the best bot....
 
-    int TPosition::chooseBestBot(const BeliefState &state, std::list<int>& freeBots, const Param& tParam, int prevID) const
+    int TPositionForPenalty::chooseBestBot(const BeliefState &state, std::list<int>& freeBots, const Param& tParam, int prevID) const
     {
       int minv   = *(freeBots.begin());
       int mindis = 1000000000;
@@ -52,18 +52,17 @@ namespace Strategy
       return minv;
     } // chooseBestBot
 
-    gr_Robot_Command TPosition::execute(const BeliefState &state, const Param& tParam)
+    gr_Robot_Command TPositionForPenalty::execute(const BeliefState &state, const Param& tParam)
     {
-      // Select the skill to the executed next
-//      printf("botpos x:%d\ty:%d\n", state->homePos[botID].x, state->homePos[botID].y);
+      
 
       Strategy::SkillSet::SkillID sID = SkillSet::GoToPoint;
       SkillSet::SParam sParam;
-      sParam.GoToPointP.x             = tParam.PositionP.x ;
-      sParam.GoToPointP.y             = tParam.PositionP.y ;
-      sParam.GoToPointP.align         = tParam.PositionP.align;
-      sParam.GoToPointP.finalslope    = tParam.PositionP.finalSlope ;
-      sParam.GoToPointP.finalVelocity = tParam.PositionP.finalVelocity;
+      sParam.GoToPointP.x             = tParam.PositionForPenaltyP.x ;
+      sParam.GoToPointP.y             = tParam.PositionForPenaltyP.y ;
+      sParam.GoToPointP.align         = tParam.PositionForPenaltyP.align;
+      sParam.GoToPointP.finalslope    = tParam.PositionForPenaltyP.finalSlope ;
+      sParam.GoToPointP.finalVelocity = tParam.PositionForPenaltyP.finalVelocity;
 
       // Execute the selected skill
       Strategy::SkillSet *ptr = SkillSet::instance();
@@ -74,34 +73,34 @@ namespace Strategy
       //   tState = COMPLETED;
       // }
     }
-    Tactic::Param TPosition::paramFromJSON(string json) {
+    Tactic::Param TPositionForPenalty::paramFromJSON(string json) {
       using namespace rapidjson;
       Tactic::Param tParam;
       Document d;
       d.Parse(json.c_str());
-      tParam.PositionP.x = d["x"].GetDouble();
-      tParam.PositionP.y = d["y"].GetDouble();
-      tParam.PositionP.align = d["align"].GetInt();
-      tParam.PositionP.finalSlope = d["finalSlope"].GetDouble();
-      tParam.PositionP.finalVelocity = d["finalVelocity"].GetDouble();
+      tParam.PositionForPenaltyP.x = d["x"].GetDouble();
+      tParam.PositionForPenaltyP.y = d["y"].GetDouble();
+      tParam.PositionForPenaltyP.align = d["align"].GetInt();
+      tParam.PositionForPenaltyP.finalSlope = d["finalSlope"].GetDouble();
+      tParam.PositionForPenaltyP.finalVelocity = d["finalVelocity"].GetDouble();
       return tParam;
     }
 
-    string TPosition::paramToJSON(Tactic::Param tParam) {
+    string TPositionForPenalty::paramToJSON(Tactic::Param tParam) {
       using namespace rapidjson;
       StringBuffer buffer;
       Writer<StringBuffer> w(buffer);
       w.StartObject();
       w.String("x");
-      w.Double(tParam.PositionP.x);
+      w.Double(tParam.PositionForPenaltyP.x);
       w.String("y");
-      w.Double(tParam.PositionP.y);
+      w.Double(tParam.PositionForPenaltyP.y);
       w.String("align");
-      w.Int(tParam.PositionP.align);
+      w.Int(tParam.PositionForPenaltyP.align);
       w.String("finalSlope");
-      w.Double(tParam.PositionP.finalSlope);
+      w.Double(tParam.PositionForPenaltyP.finalSlope);
       w.String("finalVelocity");
-      w.Double(tParam.PositionP.finalVelocity);
+      w.Double(tParam.PositionForPenaltyP.finalVelocity);
       w.EndObject();
       return buffer.GetString();
     }

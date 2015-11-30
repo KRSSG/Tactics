@@ -69,7 +69,7 @@ namespace Strategy
         float finalSlope ;
         float finalVelocity ;
         bool align;
-      } PositionP , PositionForStartP, PositionForPenaltyP;
+      } PositionP , PositionForStartP, PositionForPenaltyP  ;
 
       // Parameters for the tactic Stop
       struct StopP

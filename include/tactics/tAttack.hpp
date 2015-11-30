@@ -1,5 +1,5 @@
-#ifndef TPOSITION_HPP
-#define TPOSITION_HPP
+#ifndef TTATTACK_HPP
+#define TTATTACK_HPP
 #include "tactic.h"
 #include "skills/skillSet.h"
 #include "krssg_ssl_msgs/BeliefState.h"
@@ -7,20 +7,21 @@
 #include <sys/time.h>
 #include <unistd.h>
 #include "tactic_factory.h"
-namespace Strategy  
+
+namespace Strategy
 {
-  class TPosition: public Tactic
+  class TAttack : public Tactic
   {
   public:
+    TAttack(int botID);
 
-    TPosition(int botID);
+    ~TAttack();
 
-    ~TPosition();
+    
+
     virtual bool isCompleted(const BeliefState &bs) const ;
 
-    virtual bool isActiveTactic(void) const;
-//CHOOSEbEST bOT AND the giving of parameters for going to the required point needs to be entered
-//Choose best bot also needs to get the params that the tactic has in order to choose the best bot....
+    inline bool isActiveTactic(void) const;
 
     virtual int chooseBestBot(const BeliefState &bs, std::list<int>& freeBots, const Param& tParam, int prevID = -1) const;
    
@@ -29,9 +30,12 @@ namespace Strategy
 
     virtual Tactic::Param paramFromJSON(string json);
     virtual string paramToJSON(Tactic::Param p);
+
+    bool pointxInField(const Vector2D<int> final) ;
     
-  }; // class TPosition
+  }; // class TAttack
   // registering tactic with factory:
-  REGISTER_TACTIC(TPosition)
+  REGISTER_TACTIC(TAttack)
 } // namespace Strategy
+
 #endif

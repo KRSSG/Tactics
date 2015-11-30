@@ -1,5 +1,5 @@
-#ifndef TPOSITION_HPP
-#define TPOSITION_HPP
+#ifndef TCHARGE_HPP
+#define TCHARGE_HPP
 #include "tactic.h"
 #include "skills/skillSet.h"
 #include "krssg_ssl_msgs/BeliefState.h"
@@ -7,15 +7,15 @@
 #include <sys/time.h>
 #include <unistd.h>
 #include "tactic_factory.h"
-namespace Strategy  
+namespace Strategy 
 {
-  class TPosition: public Tactic
+  class TCharge: public Tactic
   {
   public:
 
-    TPosition(int botID);
+    TCharge(int botID);
 
-    ~TPosition();
+    ~TCharge();
     virtual bool isCompleted(const BeliefState &bs) const ;
 
     virtual bool isActiveTactic(void) const;
@@ -32,6 +32,6 @@ namespace Strategy
     
   }; // class TPosition
   // registering tactic with factory:
-  REGISTER_TACTIC(TPosition)
+  REGISTER_TACTIC(TCharge)
 } // namespace Strategy
 #endif

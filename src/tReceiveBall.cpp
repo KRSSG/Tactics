@@ -1,5 +1,5 @@
 #include <list>
-#include "tPosition.hpp"
+#include "tReceiveBall.hpp"
 #include "skills/skillSet.h"
 #include "rapidjson/document.h"
 #include "rapidjson/writer.h"
@@ -11,26 +11,26 @@
 namespace Strategy
 {
 
-    TPosition::TPosition(int botID) :
+    TReceiveBall::TReceiveBall(int botID) :
       Tactic(botID)
     {
 
-    } // TPosition
+    } // TReceiveBall
     
 
-    TPosition::~TPosition()
-    { } // ~TPosition
-    bool TPosition::isCompleted(const BeliefState &bs) const {
+    TReceiveBall::~TReceiveBall()
+    { } // ~TReceiveBall
+    bool TReceiveBall::isCompleted(const BeliefState &bs) const {
       return false;
     }
-    bool TPosition::isActiveTactic(void) const
+    bool TReceiveBall::isActiveTactic(void) const
     {
       return false;
     }
 //CHOOSEbEST bOT AND the giving of parameters for going to the required point needs to be entered
 //Choose best bot also needs to get the params that the tactic has in order to choose the best bot....
 
-    int TPosition::chooseBestBot(const BeliefState &state, std::list<int>& freeBots, const Param& tParam, int prevID) const
+    int TReceiveBall::chooseBestBot(const BeliefState &state, std::list<int>& freeBots, const Param& tParam, int prevID) const
     {
       int minv   = *(freeBots.begin());
       int mindis = 1000000000;
@@ -52,29 +52,34 @@ namespace Strategy
       return minv;
     } // chooseBestBot
 
-    gr_Robot_Command TPosition::execute(const BeliefState &state, const Param& tParam)
+    gr_Robot_Command TReceiveBall::execute(const BeliefState &state, const Param& tParam)
     {
-      // Select the skill to the executed next
-//      printf("botpos x:%d\ty:%d\n", state->homePos[botID].x, state->homePos[botID].y);
 
-      Strategy::SkillSet::SkillID sID = SkillSet::GoToPoint;
-      SkillSet::SParam sParam;
-      sParam.GoToPointP.x             = tParam.PositionP.x ;
-      sParam.GoToPointP.y             = tParam.PositionP.y ;
-      sParam.GoToPointP.align         = tParam.PositionP.align;
-      sParam.GoToPointP.finalslope    = tParam.PositionP.finalSlope ;
-      sParam.GoToPointP.finalVelocity = tParam.PositionP.finalVelocity;
+      Vector2D<float> homePosfloat;
+      homePosfloat.x = state.homePos[botID].x;
+      homePosfloat.y = state.homePos[botID].y;
+      float dist = Vector2D<int>::dist(Vector2D<int>(state.ballPos.x,state.ballPos.y), Vector2D<int>(state.homePos[botID].x,state.homePos[botID].y));
+      float angle = normalizeAngle(Vector2D<float>::angle(Vector2D<int>(state.ballVel.x,state.ballVel.y), homePosfloat));   //angle between ball's predicted path and bot position
+      Vector2D<float> target = state.ballVel / ((state.ballVel).abs());
+      target = target * (dist * cos(angle));
 
-      // Execute the selected skill
-      Strategy::SkillSet *ptr = SkillSet::instance();
-      return ptr->executeSkill(sID, sParam, state, botID);
-
-      // if((state->homePos[botID] - Vector2D<int>(tParam.PositionP.x, tParam.PositionP.y)).absSq() < BOT_POINT_THRESH * BOT_POINT_THRESH)
-      // {
+      if(state.pr_looseBall)
+      {
+        Strategy::SkillSet::SkillID sID = SkillSet::GoToPoint;
+        SkillSet::SParam sParam;
+        sParam.GoToPointP.x = target.x;
+        sParam.GoToPointP.y = target.y;
+        sParam.GoToPointP.align = true;
+        Strategy::SkillSet *ptr = SkillSet::instance();
+        return ptr->executeSkill(sID, sParam, state, botID);
+      }
+      // if(state->pr_goalscored || state->pr_ourBall || state->pr_oppBall)
       //   tState = COMPLETED;
-      // }
+      // else
+      //   tState = RUNNING;
+      
     }
-    Tactic::Param TPosition::paramFromJSON(string json) {
+    Tactic::Param TReceiveBall::paramFromJSON(string json) {
       using namespace rapidjson;
       Tactic::Param tParam;
       Document d;
@@ -87,7 +92,7 @@ namespace Strategy
       return tParam;
     }
 
-    string TPosition::paramToJSON(Tactic::Param tParam) {
+    string TReceiveBall::paramToJSON(Tactic::Param tParam) {
       using namespace rapidjson;
       StringBuffer buffer;
       Writer<StringBuffer> w(buffer);

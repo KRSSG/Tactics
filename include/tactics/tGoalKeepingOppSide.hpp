@@ -1,5 +1,5 @@
-#ifndef TPOSITION_HPP
-#define TPOSITION_HPP
+#ifndef TGOALKEEPINGOPPSIDE_HPP
+#define TGOALKEEPINGOPPSIDE_HPP
 #include "tactic.h"
 #include "skills/skillSet.h"
 #include "krssg_ssl_msgs/BeliefState.h"
@@ -9,13 +9,14 @@
 #include "tactic_factory.h"
 namespace Strategy  
 {
-  class TPosition: public Tactic
+  class TGoalKeepingOppSide: public Tactic
   {
   public:
+    int state1;
 
-    TPosition(int botID);
+    TGoalKeepingOppSide(int botID);
 
-    ~TPosition();
+    ~TGoalKeepingOppSide();
     virtual bool isCompleted(const BeliefState &bs) const ;
 
     virtual bool isActiveTactic(void) const;
@@ -23,6 +24,10 @@ namespace Strategy
 //Choose best bot also needs to get the params that the tactic has in order to choose the best bot....
 
     virtual int chooseBestBot(const BeliefState &bs, std::list<int>& freeBots, const Param& tParam, int prevID = -1) const;
+    
+    virtual bool isGoalKeeperInPosition(const BeliefState &state);
+
+    virtual int getBotDestPointY(const BeliefState &state);
    
 
     virtual gr_Robot_Command execute(const BeliefState &state, const Param& tParam);
@@ -30,8 +35,8 @@ namespace Strategy
     virtual Tactic::Param paramFromJSON(string json);
     virtual string paramToJSON(Tactic::Param p);
     
-  }; // class TPosition
+  }; // class TGoalKeepingOppSide
   // registering tactic with factory:
-  REGISTER_TACTIC(TPosition)
+  REGISTER_TACTIC(TGoalKeepingOppSide)
 } // namespace Strategy
 #endif

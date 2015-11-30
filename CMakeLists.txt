@@ -185,7 +185,24 @@ include_directories(include include/tactics ${catkin_INCLUDE_DIRS})
 
 set (tacticsSrc
   src/tPosition.cpp
-  src/tStop.cpp)
+  src/tVelocity.cpp
+  src/tBlock.cpp
+  src/tStop.cpp
+  src/tCharge.cpp
+  src/tDefend.cpp
+  #src/tDefendLine.cpp
+  src/tDefendPoint.cpp
+  #src/tDragToGoalOpp.cpp
+  #src/tGoalKeepingOppSide.cpp
+  #src/tDragToGoal.cpp
+  #src/tKickToGoal.cpp
+  src/tPass.cpp
+  src/tPositionForPenalty.cpp
+  src/tPositionForStart.cpp
+  #src/tReceiveBall.cpp
+  src/tShoot.cpp
+  src/tSteal.cpp
+  )
 
 
 set(src 

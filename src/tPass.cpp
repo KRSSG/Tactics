@@ -1,5 +1,5 @@
 #include <list>
-#include "tPosition.hpp"
+#include "tPass.hpp"
 #include "skills/skillSet.h"
 #include "rapidjson/document.h"
 #include "rapidjson/writer.h"
@@ -11,26 +11,26 @@
 namespace Strategy
 {
 
-    TPosition::TPosition(int botID) :
+    TPass::TPass(int botID) :
       Tactic(botID)
     {
 
-    } // TPosition
+    } // TPass
     
 
-    TPosition::~TPosition()
-    { } // ~TPosition
-    bool TPosition::isCompleted(const BeliefState &bs) const {
+    TPass::~TPass()
+    { } // ~TPass
+    bool TPass::isCompleted(const BeliefState &bs) const {
       return false;
     }
-    bool TPosition::isActiveTactic(void) const
+    bool TPass::isActiveTactic(void) const
     {
       return false;
     }
 //CHOOSEbEST bOT AND the giving of parameters for going to the required point needs to be entered
 //Choose best bot also needs to get the params that the tactic has in order to choose the best bot....
 
-    int TPosition::chooseBestBot(const BeliefState &state, std::list<int>& freeBots, const Param& tParam, int prevID) const
+    int TPass::chooseBestBot(const BeliefState &state, std::list<int>& freeBots, const Param& tParam, int prevID) const
     {
       int minv   = *(freeBots.begin());
       int mindis = 1000000000;
@@ -52,52 +52,52 @@ namespace Strategy
       return minv;
     } // chooseBestBot
 
-    gr_Robot_Command TPosition::execute(const BeliefState &state, const Param& tParam)
+    gr_Robot_Command TPass::execute(const BeliefState &state, const Param& tParam)
     {
       // Select the skill to the executed next
-//      printf("botpos x:%d\ty:%d\n", state->homePos[botID].x, state->homePos[botID].y);
-
-      Strategy::SkillSet::SkillID sID = SkillSet::GoToPoint;
+      Strategy::SkillSet::SkillID sID = SkillSet::KickToPoint;
       SkillSet::SParam sParam;
-      sParam.GoToPointP.x             = tParam.PositionP.x ;
-      sParam.GoToPointP.y             = tParam.PositionP.y ;
-      sParam.GoToPointP.align         = tParam.PositionP.align;
-      sParam.GoToPointP.finalslope    = tParam.PositionP.finalSlope ;
-      sParam.GoToPointP.finalVelocity = tParam.PositionP.finalVelocity;
-
-      // Execute the selected skill
+      sParam.KickToPointP.x = tParam.PassP.x;
+      sParam.KickToPointP.y = tParam.PassP.y;
+      sParam.KickToPointP.power = tParam.PassP.power;
+      
       Strategy::SkillSet *ptr = SkillSet::instance();
-      return ptr->executeSkill(sID, sParam, state, botID);
+      return ptr->executeSkill(sID, sParam, state, botID);              // Execute the selected skill
+      
+      /*if (Vstate.homePos[botID].absSq() < BOT_BALL_THRESH * BOT_BALL_THRESH)      //end conditions
+      {
+        //tState = COMPLETED;
+      }*/     
+        
+      
 
-      // if((state->homePos[botID] - Vector2D<int>(tParam.PositionP.x, tParam.PositionP.y)).absSq() < BOT_POINT_THRESH * BOT_POINT_THRESH)
-      // {
-      //   tState = COMPLETED;
-      // }
+
+      
+
+      
     }
-    Tactic::Param TPosition::paramFromJSON(string json) {
+    Tactic::Param TPass::paramFromJSON(string json) {
       using namespace rapidjson;
       Tactic::Param tParam;
       Document d;
       d.Parse(json.c_str());
-      tParam.PositionP.x = d["x"].GetDouble();
-      tParam.PositionP.y = d["y"].GetDouble();
-      tParam.PositionP.align = d["align"].GetInt();
-      tParam.PositionP.finalSlope = d["finalSlope"].GetDouble();
-      tParam.PositionP.finalVelocity = d["finalVelocity"].GetDouble();
+      tParam.PassP.x = d["x"].GetDouble();
+      tParam.PassP.y = d["y"].GetDouble();
+      tParam.PassP.power = d["power"].GetInt();
       return tParam;
     }
 
-    string TPosition::paramToJSON(Tactic::Param tParam) {
+    string TPass::paramToJSON(Tactic::Param tParam) {
       using namespace rapidjson;
       StringBuffer buffer;
       Writer<StringBuffer> w(buffer);
       w.StartObject();
       w.String("x");
-      w.Double(tParam.PositionP.x);
+      w.Double(tParam.PassP.x);
       w.String("y");
-      w.Double(tParam.PositionP.y);
-      w.String("align");
-      w.Int(tParam.PositionP.align);
+      w.Double(tParam.PassP.y);
+      w.String("power");
+      w.Int(tParam.PassP.power);
       w.String("finalSlope");
       w.Double(tParam.PositionP.finalSlope);
       w.String("finalVelocity");
