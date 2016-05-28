@@ -41,7 +41,7 @@ namespace Strategy
       /* Union of parameters for each tactic enumerated in Tactic::ID
        * Creating object initializes each member by default to zero
        */
-       
+              
       // Parameters for tactic Goalie
       struct GoalieP
       { } GoalieP;
@@ -61,6 +61,11 @@ namespace Strategy
         int x1, x2, y1, y2;
     int radius;
       } DefendLineP;
+
+      struct
+      {
+        bool intercept;
+      } GoToBallP;
     
       struct PositionP
       {
