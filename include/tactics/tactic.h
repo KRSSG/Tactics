@@ -135,6 +135,20 @@ namespace Strategy
         int side;
       }DefendARCP;
       
+      struct InterecptP {
+        int awayBotID;
+      } InterceptP;
+
+      struct ReceiveP {
+        int x; 
+        int y;
+      } ReceiveP;
+
+      struct PassToPointP {
+        int x;
+        int y;
+      } PassToPointP;
+      
       Param() {
         /** Create a Parameter Object for Tactics
          * Initializes all the members initially to zero by default
