@@ -124,6 +124,17 @@ namespace Strategy
         float y;
       } PassP;
       
+        struct DefendARc
+      {
+        float x1;
+        float x2;
+        float y1;
+        float y2;
+        float xc;
+        float yc;
+        int side;
+      }DefendARCP;
+      
       Param() {
         /** Create a Parameter Object for Tactics
          * Initializes all the members initially to zero by default
