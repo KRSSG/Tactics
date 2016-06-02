@@ -187,7 +187,8 @@ set (tacticsSrc
   src/tPosition.cpp
   src/tStop.cpp
   src/tKickToGoal.cpp
-  src/tGoToBall.cpp)
+  src/tGoToBall.cpp
+  src/tDefendARC.cpp)
 
 
 set(src 
