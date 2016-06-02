@@ -10,7 +10,7 @@
 #include <stdio.h>
 #include <ssl_common/geometry.hpp>
 
-#define KICK_RANGE_THRESH MAX_DRIBBLE_R
+#define KICK_RANGE_THRESH 3 * MAX_DRIBBLE_R
 #define THRES (0.8f)
 #define THETA_THRESH 0.005
 
@@ -46,7 +46,6 @@ namespace Strategy{
 		Vector2D<int> ballAim, goalieTarget;
 		Vector2D<int> botpos (state.homePos[botID].x, state.homePos[botID].y);
 		Vector2D<int> ballPos(state.ballPos.x, state.ballPos.y);
-
 		Vector2D<int> ballVel(state.ballVel.x , state.ballVel.y);
 
 		Strategy::SkillSet::SkillID sID;
@@ -55,28 +54,14 @@ namespace Strategy{
 		
 		
 		float dist = Vector2D<int>::dist(ballPos, botpos);
-		if(ballVel.absSq() < MAX_BOT_SPEED && abs(state.ballPos.y) < OUR_GOAL_MAXY && state.ballPos.x  > (HALF_FIELD_MAXX - 2 * DBOX_WIDTH)){	//Invert sign on Side Change
-			if( state.ballPos.x > state.homePos[botID].x ){
-				if( dist >= DRIBBLER_BALL_THRESH){
-					sID = SkillSet::GoToBall;						
-					return SkillSet::instance()->executeSkill(sID, sParam, state, botID);	 
-				}
-				else{
-					sID = SkillSet::DribbleToPoint;
-					sParam.DribbleToPointP.x = state.homePos[botID].x;
-					sParam.DribbleToPointP.y = state.homePos[botID].y;
-					sParam.DribbleToPointP.finalslope = 0;
-					sParam.DribbleToPointP.radius = 0;					
-					return SkillSet::instance()->executeSkill(sID,sParam,state,botID);
-				}
-			}
-			else if( dist >= DRIBBLER_BALL_THRESH){
+		if(sqrt(ballVel.absSq()) < MAX_BOT_SPEED && abs(state.ballPos.y) < OUR_GOAL_MAXY && state.ballPos.x  > (HALF_FIELD_MAXX - 2 * DBOX_WIDTH)){	//Invert sign on Side Change
+			if(dist >= DRIBBLER_BALL_THRESH){
 				sID = SkillSet::GoToBall;						
 				return SkillSet::instance()->executeSkill(sID, sParam, state, botID);	 
 			}
 			else{
 				sID = SkillSet::Kick;
-				sParam.KickP.power = 7.0f;							
+				sParam.KickP.power = 10.0f;							
 				return SkillSet::instance()->executeSkill(sID, sParam, state, botID);    	
 			}
 
@@ -84,8 +69,8 @@ namespace Strategy{
 		
 		float default_x = HALF_FIELD_MAXX - DBOX_WIDTH/2;														//Invert Signs on Side Change
 
-		if(state.ballPos.x > default_x && state.ballPos.x < HALF_FIELD_MAXX)												//Invert Signs on Side Change
-			goalieTarget.x = state.ballPos.x + BOT_RADIUS + BALL_RADIUS;												//Invert Signs on Side Change
+		if(state.ballPos.x > (HALF_FIELD_MAXX - (1.5 * DBOX_WIDTH)) && state.ballPos.x < HALF_FIELD_MAXX)												//Invert Signs on Side Change
+			goalieTarget.x = HALF_FIELD_MAXX - BOT_RADIUS - BALL_RADIUS;													//Invert Signs on Side Change
 		else
 			goalieTarget.x = default_x;
 		
@@ -96,7 +81,7 @@ namespace Strategy{
 		for(int oppID=0;oppID<4;++oppID){
 			Vector2D<int> oppPos (state.awayPos[oppID].x, state.awayPos[oppID].y);	
 
-			float kick_range_test = (oppPos - ballPos).absSq();
+			float kick_range_test = sqrt((oppPos - ballPos).absSq());
 
 			if(kick_range_test < KICK_RANGE_THRESH && kick_range_test < striker_dist){
 				striker = oppID;
@@ -119,8 +104,6 @@ namespace Strategy{
 					goalieTarget.y 	= 0;
 			}
 		}
-
-
 		
 		if(goalieTarget.y< OUR_GOAL_MINY/1.2){
 			goalieTarget.y = OUR_GOAL_MINY/1.2;
@@ -128,10 +111,6 @@ namespace Strategy{
 		else if(goalieTarget.y > OUR_GOAL_MAXY/1.2){
 			goalieTarget.y = OUR_GOAL_MAXY/1.2;
 		}
-
-
-		
-
 
 		sID = SkillSet::GoToPoint;
 		sParam.GoToPointP.x = goalieTarget.x;													
