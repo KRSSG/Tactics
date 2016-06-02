@@ -111,6 +111,12 @@ namespace Strategy
         int awayBotID ;
       } MarkBotP;
       
+      struct AttackSupportP
+      {
+        int id;
+      } AttackSupportP;
+
+
       struct PassP
       {
         float power;
