@@ -1,5 +1,5 @@
-#ifndef T_KCIK_TO_GOAL_HPP
-#define T_KCIK_TO_GOAL_HPP
+#ifndef T_INTERCEPT_HPP
+#define T_INTERCEPT_HPP
   #include "tactic.h"
   #include "skills/skillSet.h"
   #include "krssg_ssl_msgs/BeliefState.h"
@@ -9,12 +9,12 @@
   #include "tactic_factory.h"
   #include <ssl_common/geometry.hpp>
   namespace Strategy {
-    class TKickToGoal: public Tactic {
+    class TIntercept: public Tactic {
     public:
 
-      TKickToGoal(int botID);
-
-      ~TKickToGoal();
+      TIntercept(int botID);
+      
+      ~TIntercept();
     
       virtual bool isCompleted(const BeliefState &bs) const ;
 
@@ -31,16 +31,14 @@
       virtual string paramToJSON(Tactic::Param p);
     private:
       enum InternalState {
+        GOTOPOSITION,
         GOTOBALL,
-        TURNING,
-        DRIBBLING,
-        KICKING,
+        TURNTOPOINT,
+        CLEAR,
         FINISHED,
       } iState;
-      
-      Vector2D<int> goal;
   };
   
-  REGISTER_TACTIC(TKickToGoal)
+  REGISTER_TACTIC(TIntercept)
 } 
 #endif
