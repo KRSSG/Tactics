@@ -6,6 +6,7 @@
 #include "rapidjson/stringbuffer.h"
 #include <iostream>
 #include <stdio.h>
+#include <fstream>
 #include <ssl_common/geometry.hpp>
 #include <skills/skillSet.h>
 #include "ros/ros.h"
@@ -15,7 +16,7 @@
 namespace Strategy
 {
   TReceive::TReceive(int botID) : Tactic( botID) { 
-  }
+  } 
 
   
   TReceive::~TReceive() { } 
@@ -25,81 +26,82 @@ namespace Strategy
   }
   
   inline bool TReceive::isActiveTactic(void) const {
-    return !(iState == FINISHED);
+    return iState != FINISHED;
   }
 
-  int TReceive::chooseBestBot(const BeliefState &state, std::list<int>& freeBots, const Param& tParam, int prevID) const
-   {
-     int minv   = *(freeBots.begin());
-      int mindis = 1000000000;
-      Vector2D<int> tGoToPoint(tParam.ReceiveP.x, tParam.ReceiveP.y);
-      for (std::list<int>::iterator it = freeBots.begin(); it != freeBots.end(); ++it)
-      {
-        // TODO make the bot choosing process more sophisticated, the logic below returns the 1st available bot
-        Vector2D<int> homePos(state.homePos[*it].x, state.homePos[*it].y);
-        float dis_from_point = (homePos - tGoToPoint).absSq();
-        if(*it == prevID)
-          dis_from_point -= HYSTERESIS;
-        if(dis_from_point < mindis)
-        {
-          mindis = dis_from_point;
-          minv = *it;
+  int TReceive::chooseBestBot(const BeliefState &state, std::list<int>& freeBots, const Param& tParam, int prevID) const {
+    //HAS TO BE WRITTEN.
+    int minv = *(freeBots.begin());
+    float mindis = -1;
+    for (std::list<int>::const_iterator it = freeBots.begin(); it != freeBots.end(); ++it)
+    {
+      Vector2D<int> pointPos(tParam.ReceiveP.x,tParam.ReceiveP.y);
+      Vector2D<int> ballPos(state.ballPos.x, state.ballPos.y);
+
+      float dis_from_ball = (pointPos - ballPos).absSq();
+      if (mindis < 0) {
+        mindis = dis_from_ball;
+        minv = *it; 
+      }
+      else if(dis_from_ball < mindis) {
+        mindis = dis_from_ball;
+        minv = *it;
+      }
+    }
+    assert(mindis >= 0.0f);
+    return minv;
+  }
+    
+  gr_Robot_Command TReceive::execute(const BeliefState &state, const Tactic::Param& tParam) {
+    
+    Vector2D<int> receivePoint(tParam.ReceiveP.x, tParam.ReceiveP.y);
+    Vector2D<int> botPos(state.homePos[botID].x, state.homePos[botID].y);
+    Vector2D<int> ballPos(state.ballPos.x, state.ballPos.y);
+    float dist = Vector2D<int>::dist(botPos, receivePoint);
+    float ballDist = Vector2D<int>::dist(botPos, ballPos);
+    if(ballDist >= 2.0 * BOT_RADIUS) {
+      if(dist > BOT_BALL_THRESH) {
+        iState = GOTOPOINT;
+      }
+      else {
+        if(dist <= DRIBBLER_BALL_THRESH) {
+          iState = GOTOBALL;
+        }
+        else {
+          iState = GOTOPOINT;
         }
       }
-      //printf("%d tReceive\n", minv);
-      return minv;
-  }
-
-  gr_Robot_Command TReceive::execute(const BeliefState &state, const Tactic::Param& tParam) 
-  {
-    Vector2D<int> point(tParam.PassToPointP.x,tParam.PassToPointP.y);
-    Vector2D<int> ballPos(state.ballPos.x, state.ballPos.y);
-    Vector2D<int> botPos(state.homePos[botID].x, state.homePos[botID].y);
-    
-    float dist = Vector2D<int>::dist(point, botPos);
-    float balldist=Vector2D<int>::dist(ballPos,botPos);
-    float finalslope=normalizeAngle(Vector2D<int>::angle(ballPos,botPos));
+    }
+    else if(ballDist >= DRIBBLER_BALL_THRESH){
+      iState = GOTOBALL;
+    }
+    else {
+      iState = RECEIVEBALL;
+    }
 
     Strategy::SkillSet::SkillID sID;
     SkillSet::SParam sParam;
-
-    if (dist >= DRIBBLER_BALL_THRESH) {
-      iState=GOTOPOS;     
-    }
-     else if(balldist<1.5*DRIBBLER_BALL_THRESH)
-    {
-      iState=FINISHED;
-    }
-    else 
-    {
-      iState=GOTOBALL; 
-    }
-   ROS_INFO("istate : %d",iState);
-    
-    switch(iState)
-    {
-      case GOTOPOS:
+    switch(iState) {
+      case GOTOPOINT: 
       {
         sID = SkillSet::GoToPoint;
-        sParam.GoToPointP.x=point.x;
-        sParam.GoToPointP.y=point.y;
-        sParam.GoToPointP.finalslope=finalslope;
-        sParam.GoToPointP.align=false;
+        sParam.GoToPointP.x = receivePoint.x;
+        sParam.GoToPointP.y = receivePoint.y;
+        sParam.GoToPointP.finalVelocity  = 0;
+        sParam.GoToPointP.finalslope = Vector2D<int>::angle(ballPos, botPos);
+        sParam.GoToPointP.align = false;
         return SkillSet::instance()->executeSkill(sID, sParam, state, botID);
         break;
       }
-      case GOTOBALL:
+      case GOTOBALL: 
       {
         sID = SkillSet::GoToBall;
-        sParam.GoToBallP.intercept=false;
         return SkillSet::instance()->executeSkill(sID, sParam, state, botID);
         break;
       }
-      case FINISHED:
+      case RECEIVEBALL:
       {
-        sID = SkillSet::Dribble;
-        return SkillSet::instance()->executeSkill(sID, sParam, state, botID);
-        break;
+        iState = FINISHED;
       }
     }
   }  

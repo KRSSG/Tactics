@@ -5,20 +5,23 @@
 #include "rapidjson/writer.h"
 #include "rapidjson/stringbuffer.h"
 #include <iostream>
+
 #include <fstream>
 #include <stdio.h>
 #include <ssl_common/geometry.hpp>
 #include <skills/skillSet.h>
 #include "ros/ros.h"
 
+
 #define THRES (0.8f)
 
 namespace Strategy
 {
   TPassToPoint::TPassToPoint(int botID) : Tactic( botID) { 
+   
+    //point = Vector2D<int>(HALF_FIELD_MAXX / 2.0f , HALF_FIELD_MAXY / 2.0f);
   }
 
-  
   TPassToPoint::~TPassToPoint() { } 
 
   bool TPassToPoint::isCompleted(const BeliefState &bs) const {
@@ -26,48 +29,49 @@ namespace Strategy
   }
   
   inline bool TPassToPoint::isActiveTactic(void) const {
-    return !(iState == FINISHED);
+    return iState != FINISHED;
   }
 
-  int TPassToPoint::chooseBestBot(const BeliefState &state, std::list<int>& freeBots, const Param& tParam, int prevID) const
-   {
-       int minv   = *(freeBots.begin());
-      int mindis = 1000000000;
-      Vector2D<int> tGoToPoint(tParam.PassToPointP.x, tParam.PassToPointP.y);
-      for (std::list<int>::iterator it = freeBots.begin(); it != freeBots.end(); ++it)
-      {
-        // TODO make the bot choosing process more sophisticated, the logic below returns the 1st available bot
-        Vector2D<int> homePos(state.homePos[*it].x, state.homePos[*it].y);
-        float dis_from_point = (homePos - tGoToPoint).absSq();
-        if(*it == prevID)
-          dis_from_point -= HYSTERESIS;
-        if(dis_from_point < mindis)
-        {
-          mindis = dis_from_point;
-          minv = *it;
-        }
+  int TPassToPoint::chooseBestBot(const BeliefState &state, std::list<int>& freeBots, const Param& tParam, int prevID) const {
+  
+    int minv = *(freeBots.begin());
+    float mindis = -1;
+    for (std::list<int>::const_iterator it = freeBots.begin(); it != freeBots.end(); ++it)
+    {
+      Vector2D<int> homePos(state.homePos[*it].x, state.homePos[*it].y);
+      Vector2D<int> ballPos(state.ballPos.x, state.ballPos.y);
+
+      float dis_from_ball = (homePos - ballPos).absSq();
+      if (mindis < 0) {
+        mindis = dis_from_ball;
+        minv = *it; 
       }
-      //printf("%d tPassPointn\n", minv);
-      return minv;
+      else if(dis_from_ball < mindis) {
+        mindis = dis_from_ball;
+        minv = *it;
+      }
+    }
+    assert(mindis >= 0.0f);
+    return minv;
   }
 
-  gr_Robot_Command TPassToPoint::execute(const BeliefState &state, const Tactic::Param& tParam) 
-  {
-    Vector2D<int> point(tParam.PassToPointP.x,tParam.PassToPointP.y);
-
+  gr_Robot_Command TPassToPoint::execute(const BeliefState &state, const Tactic::Param& tParam) {
+    
+    Vector2D<int> point(tParam.PassToPointP.x, tParam.PassToPointP.y);
     Vector2D<int> ballPos(state.ballPos.x, state.ballPos.y);
     Vector2D<int> botPos(state.homePos[botID].x, state.homePos[botID].y);
     
     float dist = Vector2D<int>::dist(ballPos, botPos);
-    float angleToTurn = normalizeAngle(state.homePos[botID].theta - Vector2D<int>::angle(point, ballPos));
-       
+
+    float angleToTurn = normalizeAngle(state.homePos[botID].theta - Vector2D<int>::angle(point, ballPos));       
 
     float pointDis = Vector2D<int>::dist(botPos, point);
     float goalBotAngle = Vector2D<int>::angle(point, botPos);
     float ballBotAngle = Vector2D<int>::angle(ballPos, botPos);
     float angle = Vector2D<int>::angle(point, botPos);
-    float angleUp = angle + asin(BOT_RADIUS / pointDis);
-    float angleDown = angle - asin(BOT_RADIUS / pointDis);
+
+    float angleUp = angle + asin(BOT_RADIUS / (10.0 * pointDis));
+    float angleDown = angle - asin(BOT_RADIUS / (10.0 * pointDis));
 
     Strategy::SkillSet::SkillID sID;
     SkillSet::SParam sParam;
@@ -103,9 +107,10 @@ namespace Strategy
       }  
       case PASSING:
       {
-        double power = pointDis * 5.0f / HALF_FIELD_MAXX;
-        power  < 3.0 ? 3.0 : power;
-        power > 10.0? 9.0 : power;
+
+        float power = pointDis / (HALF_FIELD_MAXX / 8.0);
+        power = power > 6.0 ? 6.0 : power;
+        power = power < 3.0 ? 3.0 : power;
         sID = SkillSet::Kick;
         sParam.KickP.power = power; 
         iState = FINISHED;
@@ -123,8 +128,9 @@ namespace Strategy
       d.Parse(json.c_str());
       tParam.PassToPointP.x = d["x"].GetDouble();
       tParam.PassToPointP.y = d["y"].GetDouble();
-    return tParam;
-  }
+
+      return tParam;
+ }
 
   string TPassToPoint::paramToJSON(Tactic::Param tParam) {
     using namespace rapidjson;
@@ -137,6 +143,6 @@ namespace Strategy
       w.Double(tParam.PassToPointP.y);
       w.EndObject();
       return buffer.GetString();
-  }
-    
+  }    
+
 } 

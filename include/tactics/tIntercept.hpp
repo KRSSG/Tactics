@@ -1,6 +1,5 @@
-#ifndef T_RECEIVE_HPP
-#define T_RECEIVE_HPP
-
+#ifndef T_INTERCEPT_HPP
+#define T_INTERCEPT_HPP
   #include "tactic.h"
   #include "skills/skillSet.h"
   #include "krssg_ssl_msgs/BeliefState.h"
@@ -10,12 +9,12 @@
   #include "tactic_factory.h"
   #include <ssl_common/geometry.hpp>
   namespace Strategy {
-    class TReceive: public Tactic {
+    class TIntercept: public Tactic {
     public:
 
-      TReceive(int botID);
-
-      ~TReceive();
+      TIntercept(int botID);
+      
+      ~TIntercept();
     
       virtual bool isCompleted(const BeliefState &bs) const ;
 
@@ -32,13 +31,14 @@
       virtual string paramToJSON(Tactic::Param p);
     private:
       enum InternalState {
-        GOTOPOINT,
-        RECEIVEBALL,
+        GOTOPOSITION,
         GOTOBALL,
+        TURNTOPOINT,
+        CLEAR,
         FINISHED,
       } iState;
-    Vector2D<int> receivePoint;
   };
-  REGISTER_TACTIC(TReceive)
+  
+  REGISTER_TACTIC(TIntercept)
 } 
 #endif
