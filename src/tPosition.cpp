@@ -47,7 +47,7 @@ namespace Strategy
           minv = *it;
         }
       }
-      printf("%d assigned Position\n", minv);
+      //printf("%d assigned Position\n", minv);
       return minv;
     } // chooseBestBot
 

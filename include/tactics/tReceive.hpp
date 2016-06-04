@@ -1,5 +1,5 @@
-#ifndef T_KCIK_TO_GOAL_HPP
-#define T_KCIK_TO_GOAL_HPP
+#ifndef RECEIVE_HPP
+#define RECEIVE_HPP
   #include "tactic.h"
   #include "skills/skillSet.h"
   #include "krssg_ssl_msgs/BeliefState.h"
@@ -9,12 +9,12 @@
   #include "tactic_factory.h"
   #include <ssl_common/geometry.hpp>
   namespace Strategy {
-    class TKickToGoal: public Tactic {
+    class TReceive: public Tactic {
     public:
 
-      TKickToGoal(int botID);
+      TReceive(int botID);
 
-      ~TKickToGoal();
+      ~TReceive();
     
       virtual bool isCompleted(const BeliefState &bs) const ;
 
@@ -31,16 +31,12 @@
       virtual string paramToJSON(Tactic::Param p);
     private:
       enum InternalState {
+        GOTOPOS,
         GOTOBALL,
-        TURNING,
-        DRIBBLING,
-        KICKING,
         FINISHED,
       } iState;
-      
-      Vector2D<int> goal;
   };
   
-  REGISTER_TACTIC(TKickToGoal)
+  REGISTER_TACTIC(TReceive)
 } 
 #endif

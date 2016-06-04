@@ -106,12 +106,11 @@ namespace Strategy
         int awayBotID ;
       } MarkBotP;
       
-      struct PassP
+      struct PassToPointP
       {
-        float power;
         float x;
         float y;
-      } PassP;
+      } PassToPointP,ReceiveP;
       
       Param() {
         /** Create a Parameter Object for Tactics
