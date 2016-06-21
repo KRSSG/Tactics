@@ -30,6 +30,13 @@ namespace Strategy
     virtual Tactic::Param paramFromJSON(string json);
     virtual string paramToJSON(Tactic::Param p);
     
+    private:
+    enum InternalState
+    { 
+      COMPLETED,
+      RUNNING
+    }iState;
+    
   }; // class TPosition
   // registering tactic with factory:
   REGISTER_TACTIC(TPosition)

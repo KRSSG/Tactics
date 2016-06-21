@@ -20,7 +20,7 @@ namespace Strategy
     TPosition::~TPosition()
     { } // ~TPosition
     bool TPosition::isCompleted(const BeliefState &bs) const {
-      return false;
+      return iState==COMPLETED;
     }
     bool TPosition::isActiveTactic(void) const
     {
@@ -66,12 +66,11 @@ namespace Strategy
 
       // Execute the selected skill
       Strategy::SkillSet *ptr = SkillSet::instance();
+      if((Vector2D<int>(state.homePos[botID].x,state.homePos[botID].y) - Vector2D<int>(tParam.PositionP.x, tParam.PositionP.y)).absSq() < BOT_POINT_THRESH * BOT_POINT_THRESH)
+      {
+        iState = COMPLETED;
+      }
       return ptr->executeSkill(sID, sParam, state, botID);
-
-      // if((state->homePos[botID] - Vector2D<int>(tParam.PositionP.x, tParam.PositionP.y)).absSq() < BOT_POINT_THRESH * BOT_POINT_THRESH)
-      // {
-      //   tState = COMPLETED;
-      // }
     }
     Tactic::Param TPosition::paramFromJSON(string json) {
       using namespace rapidjson;

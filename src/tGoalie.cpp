@@ -29,10 +29,10 @@ namespace Strategy{
 
 	bool TGoalie::isCompleted(const BeliefState &bs) const{
 		//add logic
-		return false;
+		return true;
 	}
 	bool TGoalie::isActiveTactic(void)const{
-		return false;
+		return true;
 	}
 
 	int TGoalie::chooseBestBot(const BeliefState &state, std::list<int>& freeBots, const Param& tParam, int prevID) const{

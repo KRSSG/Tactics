@@ -28,7 +28,7 @@ namespace Strategy
   }
   
   inline bool TKickToGoal::isActiveTactic(void) const {
-    return iState != FINISHED;
+    return true;
   }
 
   int TKickToGoal::chooseBestBot(const BeliefState &state, std::list<int>& freeBots, const Param& tParam, int prevID) const {
@@ -65,8 +65,6 @@ namespace Strategy
   gr_Robot_Command TKickToGoal::execute(const BeliefState &state, const Tactic::Param& tParam) {
     //fstream f;
     //f.open("/home/shivanshu05/catkin_ws/log.txt", fstream::app);
-
-    goal = Vector2D<int>(HALF_FIELD_MAXX, 0);
     Vector2D<int> ballPos(state.ballPos.x, state.ballPos.y);
     Vector2D<int> botPos(state.homePos[botID].x, state.homePos[botID].y);
     float dist = Vector2D<int>::dist(ballPos, botPos);
@@ -83,18 +81,18 @@ namespace Strategy
       //f << "GO tTO BALL\n";
     }
     else if(state.homePos[botID].theta >= angleMax || state.homePos[botID].theta <= angleMin) {
-    	iState = TURNING;
+      iState = TURNING;
       //f<< "TURN TO FACE GOAL\n";
-    	destination = Vector2D<int>(HALF_FIELD_MAXX, 0);
+      destination = Vector2D<int>(HALF_FIELD_MAXX, 0);
     }    
     else {
       std::vector<float> obsAngle;
-    	std::vector<bool> angleHighInShootRange;
-    	obsAngle.push_back(angleMin);
+      std::vector<bool> angleHighInShootRange;
+      obsAngle.push_back(angleMin);
       angleHighInShootRange.push_back(false);
       obsAngle.push_back(angleMax);
-      angleHighInShootRange.push_back(true); 	
-    	//f << "angle max = " << angleMax << ", angle min = " << angleMin << endl; 
+      angleHighInShootRange.push_back(true);  
+      //f << "angle max = " << angleMax << ", angle min = " << angleMin << endl; 
       for(int bID = 0; bID < TEAMSIZE; bID++) {
         Vector2D<int> objPos(state.awayPos[bID].x, state.awayPos[bID].y);
         float objDist = Vector2D<int>::dist(botPos, objPos);
@@ -204,35 +202,27 @@ namespace Strategy
       float randv = getRandom();
       randv = randv > THRES ? 1 - randv : randv;
       //randv = randv < 1-THRES ? 1 - randv : randv;
-
-      /*float angle1 = angleUp * randv + (1-randv) * angleDown;
-      float angle2 = angleUp * (1-randv) + randv * angleDown;*/
-      float angleMid = (angleUp + angleDown) / 2.0f;
-      float goalDist = Vector2D<int>::dist(botPos, goal);
-      float alpha = asin(BOT_RADIUS / (2.0*goalDist));
-      float angle1 = angleMid + alpha;
-      float angle2 = angleMid - alpha; 
+      float angle1 = angleUp * randv + (1-randv) * angleDown;
+      float angle2 = angleUp * (1-randv) + randv * angleDown;
       if(state.homePos[botID].theta <=angle1 && state.homePos[botID].theta >= angle2) {
           iState=KICKING;
           //for(int i = 0; i < obsAngle.size(); i++) {
           //  f << i << "]\t" << obsAngle[i] << endl;
           //}
       }
-
-      else if (state.homePos[botID].theta < (angleMid)){
-      		iState=TURNING;
+      else if (state.homePos[botID].theta < (angleDown*0.5 + angleUp*0.5)){
+          iState=TURNING;
           destination.x = HALF_FIELD_MAXX;
           destination.y = OPP_GOAL_MAXY;
           //f << "TURN TO DESIRED ANGLE" << endl;
-    	}
-
-      else if(state.homePos[botID].theta > (angleMid)) {
+      }
+      else if(state.homePos[botID].theta > (angleUp*0.5 + angleDown*0.5)) {
         iState = TURNING;
         destination.x = HALF_FIELD_MAXX;
         destination.y = OPP_GOAL_MINY;
         //f << "TURN TO DESIRED ANGLE" << endl;
       }
-    	
+      
     }
     
     Strategy::SkillSet::SkillID sID;
@@ -278,4 +268,4 @@ namespace Strategy
     return string("");
   }
     
-} 
+}
