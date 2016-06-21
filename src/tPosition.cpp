@@ -24,7 +24,7 @@ namespace Strategy
     }
     bool TPosition::isActiveTactic(void) const
     {
-      return false;
+      return true;
     }
 //CHOOSEbEST bOT AND the giving of parameters for going to the required point needs to be entered
 //Choose best bot also needs to get the params that the tactic has in order to choose the best bot....

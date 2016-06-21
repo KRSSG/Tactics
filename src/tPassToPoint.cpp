@@ -18,8 +18,7 @@
 namespace Strategy
 {
   TPassToPoint::TPassToPoint(int botID) : Tactic( botID) { 
-   
-    //point = Vector2D<int>(HALF_FIELD_MAXX / 2.0f , HALF_FIELD_MAXY / 2.0f);
+   iState=GOTOBALL;
   }
 
   TPassToPoint::~TPassToPoint() { } 
@@ -29,7 +28,7 @@ namespace Strategy
   }
   
   inline bool TPassToPoint::isActiveTactic(void) const {
-    return iState != FINISHED;
+    return true;
   }
 
   int TPassToPoint::chooseBestBot(const BeliefState &state, std::list<int>& freeBots, const Param& tParam, int prevID) const {
@@ -75,19 +74,24 @@ namespace Strategy
 
     Strategy::SkillSet::SkillID sID;
     SkillSet::SParam sParam;
-
-    if (dist >= DRIBBLER_BALL_THRESH) {
-      iState=GOTOBALL;     
+    if(iState==FINISHED)
+    {
+      iState=FINISHED;
     }
-    
-    else if (state.homePos[botID].theta > angleUp || state.homePos[botID].theta < angleDown){
-      iState=TURNING;
+    else
+    {
+       if (dist >= DRIBBLER_BALL_THRESH) {
+          iState=GOTOBALL;     
+        }
+        
+        else if (state.homePos[botID].theta > angleUp || state.homePos[botID].theta < angleDown){
+          iState=TURNING;
+        }
+        else {
+          iState=PASSING;
+        }  
     }
-    else {
-      iState=PASSING;
-    }  
-    
-    
+      
     switch(iState)
     {
       case GOTOBALL:
@@ -117,7 +121,10 @@ namespace Strategy
         return SkillSet::instance()->executeSkill(sID, sParam, state, botID);
         break;
       }        
-
+      default:
+      {
+        iState=FINISHED;
+      }
     }
   }  
 

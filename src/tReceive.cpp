@@ -26,7 +26,7 @@ namespace Strategy
   }
   
   inline bool TReceive::isActiveTactic(void) const {
-    return iState != FINISHED;
+    return true;
   }
 
   int TReceive::chooseBestBot(const BeliefState &state, std::list<int>& freeBots, const Param& tParam, int prevID) const {
