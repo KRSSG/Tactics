@@ -53,7 +53,7 @@ namespace Strategy
 
   gr_Robot_Command TDribbleTurnPass::execute(const BeliefState &state, const Tactic::Param& tParam) {
     
-    Vector2D<int> point(tParam.PassToPointP.x, tParam.PassToPointP.y);
+    Vector2D<int> point(tParam.DribbleTurnPassP.x, tParam.DribbleTurnPassP.y);
     Vector2D<int> ballPos(state.ballPos.x, state.ballPos.y);
     Vector2D<int> botPos(state.homePos[botID].x, state.homePos[botID].y);
     
