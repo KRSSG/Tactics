@@ -196,6 +196,7 @@ set (tacticsSrc
   src/tMark.cpp
   src/tAttackSupport1_Wing.cpp
   src/tAttackSupport1_Center.cpp
+  src/tDribbleTurnPass.cpp
   )
 
 
