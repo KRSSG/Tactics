@@ -1,5 +1,6 @@
 #ifndef T_RECEIVE_HPP
 #define T_RECEIVE_HPP
+
   #include "tactic.h"
   #include "skills/skillSet.h"
   #include "krssg_ssl_msgs/BeliefState.h"

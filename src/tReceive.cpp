@@ -6,14 +6,18 @@
 #include "rapidjson/stringbuffer.h"
 #include <iostream>
 #include <stdio.h>
+#include <fstream>
 #include <ssl_common/geometry.hpp>
 #include <skills/skillSet.h>
-#include <fstream>
+#include "ros/ros.h"
+
+#define THRES (0.8f)
 
 namespace Strategy
 {
   TReceive::TReceive(int botID) : Tactic( botID) { 
   } 
+
   
   TReceive::~TReceive() { } 
 
@@ -22,7 +26,7 @@ namespace Strategy
   }
   
   inline bool TReceive::isActiveTactic(void) const {
-    return iState != FINISHED;
+    return true;
   }
 
   int TReceive::chooseBestBot(const BeliefState &state, std::list<int>& freeBots, const Param& tParam, int prevID) const {
@@ -104,25 +108,25 @@ namespace Strategy
 
   Tactic::Param TReceive::paramFromJSON(string json) {
     using namespace rapidjson;
-    Tactic::Param tParam;
-    Document d;
-    d.Parse(json.c_str());
-    tParam.ReceiveP.x = d["x"].GetDouble();
-    tParam.ReceiveP.y = d["y"].GetDouble();
+      Tactic::Param tParam;
+      Document d;
+      d.Parse(json.c_str());
+      tParam.PassToPointP.x = d["x"].GetDouble();
+      tParam.PassToPointP.y = d["y"].GetDouble();
     return tParam;
   }
 
   string TReceive::paramToJSON(Tactic::Param tParam) {
     using namespace rapidjson;
-    StringBuffer buffer;
-    Writer<StringBuffer> w(buffer);
-    w.StartObject();
-    w.String("x");
-    w.Double(tParam.ReceiveP.x);
-    w.String("y");
-    w.Double(tParam.ReceiveP.y);
-    w.EndObject();
-    return buffer.GetString();
+      StringBuffer buffer;
+      Writer<StringBuffer> w(buffer);
+      w.StartObject();
+      w.String("x");
+      w.Double(tParam.PassToPointP.x);
+      w.String("y");
+      w.Double(tParam.PassToPointP.y);
+      w.EndObject();
+      return buffer.GetString();
   }
     
 } 

@@ -119,10 +119,9 @@ namespace Strategy
 
       struct PassP
       {
-        float power;
         float x;
         float y;
-      } PassP;
+      } PassToPointP,ReceiveP;
       
         struct DefendARc
       {
@@ -139,15 +138,6 @@ namespace Strategy
         int awayBotID;
       } InterceptP;
 
-      struct ReceiveP {
-        int x; 
-        int y;
-      } ReceiveP;
-
-      struct PassToPointP {
-        int x;
-        int y;
-      } PassToPointP;
       
       struct DribbleTurnPassP {
         int x;
