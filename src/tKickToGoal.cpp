@@ -28,7 +28,7 @@ namespace Strategy
   }
   
   inline bool TKickToGoal::isActiveTactic(void) const {
-    return true;
+    return iState != FINISHED;
   }
 
   int TKickToGoal::chooseBestBot(const BeliefState &state, std::list<int>& freeBots, const Param& tParam, int prevID) const {
@@ -268,4 +268,4 @@ namespace Strategy
     return string("");
   }
     
-}
+} 

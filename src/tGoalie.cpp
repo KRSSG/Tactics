@@ -67,10 +67,10 @@ namespace Strategy{
 
 		}
 		
-		float default_x = HALF_FIELD_MAXX - DBOX_WIDTH/2;														//Invert Signs on Side Change
+		float default_x = -HALF_FIELD_MAXX + DBOX_WIDTH/2;														//Invert Signs on Side Change
 
-		if(state.ballPos.x > (HALF_FIELD_MAXX - (1.5 * DBOX_WIDTH)) && state.ballPos.x < HALF_FIELD_MAXX)												//Invert Signs on Side Change
-			goalieTarget.x = HALF_FIELD_MAXX - BOT_RADIUS - BALL_RADIUS;													//Invert Signs on Side Change
+		if(state.ballPos.x < (-HALF_FIELD_MAXX + (1.5 * DBOX_WIDTH)) && state.ballPos.x > -HALF_FIELD_MAXX)												//Invert Signs on Side Change
+			goalieTarget.x = -HALF_FIELD_MAXX + BOT_RADIUS + BALL_RADIUS;													//Invert Signs on Side Change
 		else
 			goalieTarget.x = default_x;
 		

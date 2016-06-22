@@ -24,7 +24,22 @@ namespace Strategy
   TPassToPoint::~TPassToPoint() { } 
 
   bool TPassToPoint::isCompleted(const BeliefState &bs) const {
-    return iState == FINISHED;
+    if(iState == FINISHED) 
+    {
+      fstream f;
+      f.open("/home/gunjan/catkin_ws/src/play/iState.txt",fstream::out| fstream::app);
+      f<<"finished pass \n";
+      f.close();
+      return true;
+    }
+    else 
+      {
+       fstream f;
+        f.open("/home/gunjan/catkin_ws/src/play/iState.txt",fstream::out| fstream::app);
+        f<<"not finished pass\n";
+        f.close();
+        return false;
+      }
   }
   
   inline bool TPassToPoint::isActiveTactic(void) const {
