@@ -149,6 +149,11 @@ namespace Strategy
         int y;
       } PassToPointP;
       
+      struct DribbleTurnPassP {
+        int x;
+        int y;
+      } DribbleTurnPassP;
+
       Param() {
         /** Create a Parameter Object for Tactics
          * Initializes all the members initially to zero by default

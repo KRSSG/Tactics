@@ -29,10 +29,10 @@ namespace Strategy{
 
 	bool TGoalie::isCompleted(const BeliefState &bs) const{
 		//add logic
-		return false;
+		return true;
 	}
 	bool TGoalie::isActiveTactic(void)const{
-		return false;
+		return true;
 	}
 
 	int TGoalie::chooseBestBot(const BeliefState &state, std::list<int>& freeBots, const Param& tParam, int prevID) const{
@@ -67,10 +67,10 @@ namespace Strategy{
 
 		}
 		
-		float default_x = HALF_FIELD_MAXX - DBOX_WIDTH/2;														//Invert Signs on Side Change
+		float default_x = -HALF_FIELD_MAXX + DBOX_WIDTH/2;														//Invert Signs on Side Change
 
-		if(state.ballPos.x > (HALF_FIELD_MAXX - (1.5 * DBOX_WIDTH)) && state.ballPos.x < HALF_FIELD_MAXX)												//Invert Signs on Side Change
-			goalieTarget.x = HALF_FIELD_MAXX - BOT_RADIUS - BALL_RADIUS;													//Invert Signs on Side Change
+		if(state.ballPos.x < (-HALF_FIELD_MAXX + (1.5 * DBOX_WIDTH)) && state.ballPos.x > -HALF_FIELD_MAXX)												//Invert Signs on Side Change
+			goalieTarget.x = -HALF_FIELD_MAXX + BOT_RADIUS + BALL_RADIUS;													//Invert Signs on Side Change
 		else
 			goalieTarget.x = default_x;
 		
