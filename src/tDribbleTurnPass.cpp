@@ -5,6 +5,7 @@
 #include "rapidjson/writer.h"
 #include "rapidjson/stringbuffer.h"
 #include <iostream>
+#include <fstream>
 #include <stdio.h>
 #include <ssl_common/geometry.hpp>
 #include <skills/skillSet.h>
@@ -13,14 +14,18 @@
 
 namespace Strategy
 {
-  TDribbleTurnPass::TDribbleTurnPass(int botID) : Tactic( botID) { 
-   
+  TDribbleTurnPass::TDribbleTurnPass(int botID) : Tactic( botID) {
+   iState=GOTOBALL; 
     //point = Vector2D<int>(HALF_FIELD_MAXX / 2.0f , HALF_FIELD_MAXt / 2.0f);
   }
 
   TDribbleTurnPass::~TDribbleTurnPass() { } 
 
   bool TDribbleTurnPass::isCompleted(const BeliefState &bs) const {
+    fstream file;
+    file.open("/home/gunjan/catkin_ws/src/play/here.txt",fstream::out|fstream::app);
+    file<<"here \n";
+    file.close();
     return iState == FINISHED;
   }
   
@@ -64,13 +69,17 @@ namespace Strategy
     float goalBotAngle = Vector2D<int>::angle(point, botPos);
     float ballBotAngle = Vector2D<int>::angle(ballPos, botPos);
     float angle = Vector2D<int>::angle(point, botPos);
-    float angleUp = angle + asin(BOT_RADIUS / (10.0 * pointDis));
-    float angleDown = angle - asin(BOT_RADIUS / (10.0 * pointDis));
+    float angleUp = angle + 4*asin(BOT_RADIUS / (10.0 * pointDis));
+    float angleDown = angle - 4*asin(BOT_RADIUS / (10.0 * pointDis));
 
     Strategy::SkillSet::SkillID sID;
     SkillSet::SParam sParam;
 
-    if (dist >= DRIBBLER_BALL_THRESH) {
+    if(iState==FINISHED)
+    {
+      iState=FINISHED;
+    }
+    else if (dist >= DRIBBLER_BALL_THRESH) {
       iState=GOTOBALL;     
     }
     
@@ -110,14 +119,9 @@ namespace Strategy
         iState = FINISHED;
         return SkillSet::instance()->executeSkill(sID, sParam, state, botID);
         break;
-      }   /*     
-        case GOTOBALL: case TURNING: case PASSING:
-          sID=SkillSet::TurnToPoint;
-          sParam.TurnToPointP.x=point.x;
-          sParam.TurnToPointP.y=point.y;
-          sParam.TurnToPointP.max_omega = MAX_BOT_OMEGA;
-          return SkillSet::instance()->executeSkill(sID,sParam,state,botID);
-          */
+      }  
+      default : iState=FINISHED;
+                break;
     }
   }  
 
