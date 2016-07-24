@@ -20,7 +20,7 @@ namespace Strategy
     TPosition::~TPosition()
     { } // ~TPosition
     bool TPosition::isCompleted(const BeliefState &bs) const {
-      return iState==COMPLETED;
+      return false;
     }
     bool TPosition::isActiveTactic(void) const
     {

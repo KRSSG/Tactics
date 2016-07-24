@@ -22,22 +22,17 @@ namespace Strategy
   TReceive::~TReceive() { } 
 
   bool TReceive::isCompleted(const BeliefState &bs) const {
-    if(iState == FINISHED) 
-    {
-      fstream f;
-      f.open("/home/gunjan/catkin_ws/src/play/iState.txt",fstream::out| fstream::app);
-      f<<"finished receive \n";
-      f.close();
-      return true;
-    }
-    else 
-      {
-       fstream f;
-        f.open("/home/gunjan/catkin_ws/src/play/iState.txt",fstream::out| fstream::app);
-        f<<"not finished receive \n";
-        f.close();
-        return false;
-      }
+    Vector2D<int> botPos(bs.homePos[botID].x, bs.homePos[botID].y);
+    Vector2D<int> ballPos(bs.ballPos.x, bs.ballPos.y);
+    float dist = Vector2D<int>::dist(botPos, receivePoint);
+    float ballDist = Vector2D<int>::dist(botPos, ballPos);
+    fstream f;
+    f.open("/home/gunjan/catkin_ws/src/play/receive.txt",fstream::out|fstream::app);
+    f<<"here"<<endl;
+    if(ballDist<1.2*DRIBBLER_BALL_THRESH) f<<"completed"<<endl;
+    f.close();
+    if(ballDist<1.2*DRIBBLER_BALL_THRESH) return true;
+    return false;
   }
   
   inline bool TReceive::isActiveTactic(void) const {

@@ -15,18 +15,22 @@
 namespace Strategy
 {
   TDribbleTurnPass::TDribbleTurnPass(int botID) : Tactic( botID) {
-   iState=GOTOBALL; 
-    //point = Vector2D<int>(HALF_FIELD_MAXX / 2.0f , HALF_FIELD_MAXt / 2.0f);
+     //point = Vector2D<int>(HALF_FIELD_MAXX / 2.0f , HALF_FIELD_MAXt / 2.0f);
   }
 
   TDribbleTurnPass::~TDribbleTurnPass() { } 
 
   bool TDribbleTurnPass::isCompleted(const BeliefState &bs) const {
-    fstream file;
-    file.open("/home/gunjan/catkin_ws/src/play/here.txt",fstream::out|fstream::app);
-    file<<"here \n";
-    file.close();
-    return iState == FINISHED;
+    Vector2D<int> botPos(bs.homePos[botID].x, bs.homePos[botID].y);
+    Vector2D<int> ballPos(bs.ballPos.x, bs.ballPos.y);
+    float ballDist = Vector2D<int>::dist(botPos, ballPos);
+    fstream f;
+    f.open("/home/gunjan/catkin_ws/src/play/pass.txt",fstream::out|fstream::app);
+    f<<"here"<<endl;
+    if(ballDist<1.2*DRIBBLER_BALL_THRESH) f<<"completed"<<endl;
+    f.close();
+    if(ballDist<1.2*DRIBBLER_BALL_THRESH) return true;
+    return false;
   }
   
   inline bool TDribbleTurnPass::isActiveTactic(void) const {
