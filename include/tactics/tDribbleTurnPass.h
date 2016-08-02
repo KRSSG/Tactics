@@ -35,7 +35,8 @@
         DRIBBLETURN,
         PASSING,
         FINISHED,
-      } iState;
+      }iState;
+
   };
   
   REGISTER_TACTIC(TDribbleTurnPass)

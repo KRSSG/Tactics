@@ -24,11 +24,11 @@ namespace Strategy
   TKickToGoal::~TKickToGoal() { } 
 
   bool TKickToGoal::isCompleted(const BeliefState &bs) const {
-    return iState == FINISHED;
+    return false;
   }
   
   inline bool TKickToGoal::isActiveTactic(void) const {
-    return iState != FINISHED;
+    return true;
   }
 
   int TKickToGoal::chooseBestBot(const BeliefState &state, std::list<int>& freeBots, const Param& tParam, int prevID) const {
