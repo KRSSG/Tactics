@@ -27,7 +27,7 @@ namespace Strategy{
 
 	}
 
-	bool TMark::isCompleted(const BeliefState &bs) const{
+	bool TMark::isCompleted(const BeliefState &bs,const Tactic::Param& tParam) const{
 		//add logic
 		return false;
 	}

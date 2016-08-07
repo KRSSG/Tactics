@@ -19,7 +19,7 @@ namespace Strategy
     TGoToBall::~TGoToBall()
     { }
 
-    bool TGoToBall::isCompleted(const BeliefState &bs) const 
+    bool TGoToBall::isCompleted(const BeliefState &bs,const Tactic::Param& tParam) const 
     {
       return false;
     }

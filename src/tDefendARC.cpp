@@ -33,7 +33,7 @@ namespace Strategy {
 
 	TDefendARC::~TDefendARC() {}
 
-	bool TDefendARC::isCompleted(const BeliefState& state) const {
+	bool TDefendARC::isCompleted(const BeliefState& state,const Tactic::Param& tParam) const {
 		return iState == KICK;
 	}//isCompleted
 

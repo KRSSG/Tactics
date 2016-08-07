@@ -17,7 +17,7 @@ namespace Strategy {
 		TDefendARC(int botID);
 		 ~TDefendARC();
 
-		 virtual bool isCompleted(const BeliefState& state) const;
+		 virtual bool isCompleted(const BeliefState& state,const Tactic::Param& tParam) const;
 		 virtual bool isActiveTactic(void) const;
 		 virtual int chooseBestBot(const BeliefState& state, std::list<int>& freeBots, const Param& tParam, int prevID = -1) const;
 		 virtual gr_Robot_Command execute(const BeliefState& state, const Param& tParam);

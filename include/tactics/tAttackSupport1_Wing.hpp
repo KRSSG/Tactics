@@ -17,7 +17,7 @@ namespace Strategy{
 		TAttackSupport1_Wing(int botID);
 		~TAttackSupport1_Wing();
 	
-		virtual bool isCompleted(const BeliefState &bs) const ;
+		virtual bool isCompleted(const BeliefState &bs,const Tactic::Param& tParam) const ;
 
 		virtual bool isActiveTactic(void) const;
 

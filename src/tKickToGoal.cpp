@@ -23,7 +23,7 @@ namespace Strategy
   
   TKickToGoal::~TKickToGoal() { } 
 
-  bool TKickToGoal::isCompleted(const BeliefState &bs) const {
+  bool TKickToGoal::isCompleted(const BeliefState &bs,const Tactic::Param& tParam) const {
     return false;
   }
   

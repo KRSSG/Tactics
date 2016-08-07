@@ -27,7 +27,7 @@ namespace Strategy{
 
 	}
 
-	bool TGoalie::isCompleted(const BeliefState &bs) const{
+	bool TGoalie::isCompleted(const BeliefState &bs,const Tactic::Param& tParam) const{
 		//add logic
 		return true;
 	}
@@ -38,7 +38,7 @@ namespace Strategy{
 	int TGoalie::chooseBestBot(const BeliefState &state, std::list<int>& freeBots, const Param& tParam, int prevID) const{
 	  int minv   = *(freeBots.begin());
       int mindis = 1000000;
-      Vector2D<int> tGoToPoint(OUR_GOAL_MAXX, 0);
+      Vector2D<int> tGoToPoint(-HALF_FIELD_MAXX, 0);
       for (std::list<int>::iterator it = freeBots.begin(); it != freeBots.end(); ++it)
       {
         // TODO make the bot choosing process more sophisticated, the logic below returns the 1st available bot

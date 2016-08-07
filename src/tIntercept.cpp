@@ -20,7 +20,7 @@ namespace Strategy {
 
   TIntercept::~TIntercept() { } 
 
-  bool TIntercept::isCompleted(const BeliefState &bs) const {
+  bool TIntercept::isCompleted(const BeliefState &bs,const Tactic::Param& tParam) const {
     return false;
   }
  

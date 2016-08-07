@@ -25,7 +25,7 @@ namespace Strategy{
 
 	}
 
-	bool TAttackSupport1_Center::isCompleted(const BeliefState &bs) const{
+	bool TAttackSupport1_Center::isCompleted(const BeliefState &bs,const Tactic::Param& tParam) const{
 		//add logic
 		Vector2D<int> botPos(bs.homePos[botID].x, bs.homePos[botID].y);
 	    Vector2D<int> ballPos(bs.ballPos.x, bs.ballPos.y);

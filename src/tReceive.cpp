@@ -21,16 +21,17 @@ namespace Strategy
   
   TReceive::~TReceive() { } 
 
-  bool TReceive::isCompleted(const BeliefState &bs) const {
+  bool TReceive::isCompleted(const BeliefState &bs,const Tactic::Param& tParam) const {
     Vector2D<int> botPos(bs.homePos[botID].x, bs.homePos[botID].y);
     Vector2D<int> ballPos(bs.ballPos.x, bs.ballPos.y);
     float dist = Vector2D<int>::dist(botPos, receivePoint);
     float ballDist = Vector2D<int>::dist(botPos, ballPos);
     fstream f;
     f.open("/home/gunjan/catkin_ws/src/play/receive.txt",fstream::out|fstream::app);
-    if(ballDist<1.3*DRIBBLER_BALL_THRESH) f<<"completed"<<endl;
+    if(ballDist<1.6*DRIBBLER_BALL_THRESH && dist<2*BALL_RADIUS) 
     f.close();
-    if(ballDist<1.3*DRIBBLER_BALL_THRESH) return true;
+    if(ballDist<1.6*DRIBBLER_BALL_THRESH && dist<2*BALL_RADIUS) 
+    return true;
     return false;
   }
   

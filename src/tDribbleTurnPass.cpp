@@ -20,7 +20,7 @@ namespace Strategy
 
   TDribbleTurnPass::~TDribbleTurnPass() { } 
 
-  bool TDribbleTurnPass::isCompleted(const BeliefState &bs) const {
+  bool TDribbleTurnPass::isCompleted(const BeliefState &bs,const Tactic::Param& tParam) const {
     Vector2D<int> botPos(bs.homePos[botID].x, bs.homePos[botID].y);
     Vector2D<int> ballPos(bs.ballPos.x, bs.ballPos.y);
     Vector2D<int> ballVel(bs.ballVel.x, bs.ballVel.y);

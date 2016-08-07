@@ -17,7 +17,7 @@ namespace Strategy
     TGoToBall(int botID);
 
     ~TGoToBall();
-    virtual bool isCompleted(const BeliefState &bs) const ;
+    virtual bool isCompleted(const BeliefState &bs,const Tactic::Param& tParam) const ;
 
     virtual bool isActiveTactic(void) const;
 //CHOOSEbEST bOT AND the giving of parameters for going to the required point needs to be entered

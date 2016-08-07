@@ -23,7 +23,7 @@ namespace Strategy
 
   TPassToPoint::~TPassToPoint() { } 
 
-  bool TPassToPoint::isCompleted(const BeliefState &bs) const {
+  bool TPassToPoint::isCompleted(const BeliefState &bs,const Tactic::Param& tParam) const {
     if(iState == FINISHED) 
     {
       fstream f;

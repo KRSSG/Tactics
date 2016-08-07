@@ -17,7 +17,7 @@ namespace Strategy{
 		TGoalie(int botID);
 		~TGoalie();
 	
-		virtual bool isCompleted(const BeliefState &bs) const ;
+		virtual bool isCompleted(const BeliefState &bs,const Tactic::Param& tParam) const ;
 
 		virtual bool isActiveTactic(void) const;
 

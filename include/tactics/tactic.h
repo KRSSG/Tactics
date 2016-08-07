@@ -21,7 +21,7 @@ namespace Strategy
     {
     } // ~Tactic
     // True if tactic execution looks completed
-    virtual bool isCompleted(const BeliefState &bs) const = 0;
+    virtual bool isCompleted(const BeliefState &bs,const Tactic::Param& tParam) const = 0;
     // True if the tactic is active, i.e., it involves ball manipulation
     virtual bool isActiveTactic() const = 0;
     // TODO As per the design, this function must be static but it cannot be both virtual as well as static

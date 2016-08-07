@@ -18,7 +18,7 @@ namespace Strategy
 
     TStop::~TStop()
     { } // ~TStop
-    bool TStop::isCompleted(const BeliefState &bs) const {
+    bool TStop::isCompleted(const BeliefState &bs,const Tactic::Param& tParam) const {
       // should add relevant logic here
       return false;
     }
