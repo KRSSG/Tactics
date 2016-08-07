@@ -36,7 +36,27 @@ namespace Strategy{
 	}
 
 	int TMark::chooseBestBot(const BeliefState &state, std::list<int>& freeBots, const Param& tParam, int prevID) const{
-		
+		std::vector<int> away_bots_on_our_goalie_side;
+		Vector2D<float> bot;
+		int best_bot = -1;
+		float min_dis = 999999.9f;
+
+		for(int i = 0; i < 6; ++i){
+			if(state.awayPos[i].x < 0){
+				away_bots_on_our_goalie_side.push_back(i);
+			}
+		}
+
+		for(std::list<int>::const_iterator itr = freebots.begin(); itr != freebots.end(); ++itr){
+			for(int i = 0; i < away_bots_on_our_goalie_side.size(); ++i){
+				if(Vector2D<float>::dist(state.awayPos[away_bots_on_our_goalie_side[i]], state.homePos[*itr]) < min_dis){
+					best_bot = *itr;
+					min_dis = Vector2D<float>::dist(state.awayBotID[away_bots_on_our_goalie_side[i]], state.homeBotID[*itr]);
+				}
+			}
+		}
+		assert(best_bot != -1);
+		return best_bot;
 	}
 
 	gr_Robot_Command TMark::execute(const BeliefState &state, const Tactic::Param& tParam){
