@@ -36,7 +36,24 @@ namespace Strategy{
 	}
 
 	int TGoalie::chooseBestBot(const BeliefState &state, std::list<int>& freeBots, const Param& tParam, int prevID) const{
-		
+	  int minv   = *(freeBots.begin());
+      int mindis = 1000000;
+      Vector2D<int> tGoToPoint(OUR_GOAL_MAXX, 0);
+      for (std::list<int>::iterator it = freeBots.begin(); it != freeBots.end(); ++it)
+      {
+        // TODO make the bot choosing process more sophisticated, the logic below returns the 1st available bot
+        Vector2D<int> homePos(state.homePos[*it].x, state.homePos[*it].y);
+        float dis_from_point = sqrt((homePos - tGoToPoint).absSq());
+        if(*it == prevID)
+          dis_from_point -= HYSTERESIS;
+        if(dis_from_point < mindis)
+        {
+          mindis = dis_from_point;
+          minv = *it;
+        }
+      }
+      //printf("%d assigned Position\n", minv);
+      return minv;
 	}
 
 	gr_Robot_Command TGoalie::execute(const BeliefState &state, const Tactic::Param& tParam){

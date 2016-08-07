@@ -55,7 +55,6 @@ namespace Strategy
         minv = *it;
       }
     }
-    assert(mindis >= 0.0f);
     return minv;
   }
 

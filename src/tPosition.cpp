@@ -32,7 +32,7 @@ namespace Strategy
     int TPosition::chooseBestBot(const BeliefState &state, std::list<int>& freeBots, const Param& tParam, int prevID) const
     {
       int minv   = *(freeBots.begin());
-      int mindis = 1000000000;
+      int mindis = 10000000;
       Vector2D<int> tGoToPoint(tParam.PositionP.x, tParam.PositionP.y);
       for (std::list<int>::iterator it = freeBots.begin(); it != freeBots.end(); ++it)
       {
