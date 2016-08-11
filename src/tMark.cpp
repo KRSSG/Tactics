@@ -47,11 +47,16 @@ namespace Strategy{
 			}
 		}
 
-		for(std::list<int>::const_iterator itr = freebots.begin(); itr != freebots.end(); ++itr){
+		for(std::list<int>::const_iterator itr = freeBots.begin(); itr != freeBots.end(); ++itr){
 			for(int i = 0; i < away_bots_on_our_goalie_side.size(); ++i){
-				if(Vector2D<float>::dist(state.awayPos[away_bots_on_our_goalie_side[i]], state.homePos[*itr]) < min_dis){
+
+				Vector2D<float> away_bot(state.awayPos[away_bots_on_our_goalie_side[i]].x, \
+					state.awayPos[away_bots_on_our_goalie_side[i]].y);
+				Vector2D<float> home_bot(state.homePos[*itr].x, state.homePos[*itr].y);
+
+				if(Vector2D<float>::dist(away_bot, home_bot) < min_dis){
 					best_bot = *itr;
-					min_dis = Vector2D<float>::dist(state.awayBotID[away_bots_on_our_goalie_side[i]], state.homeBotID[*itr]);
+					min_dis = Vector2D<float>::dist(away_bot, home_bot);
 				}
 			}
 		}
