@@ -136,6 +136,9 @@ namespace Strategy
       
       struct InterecptP {
         int awayBotID;
+        //where = 0 corresponds to intercepting the pass 
+        //and where = 1 corresponds to intercepting the goal
+        int where;
       } InterceptP;
 
       

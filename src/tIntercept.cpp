@@ -83,6 +83,8 @@ namespace Strategy {
           }
         }
       Vector2D<int> passerBot(state.homePos[passerBotID].x, state.homePos[passerBotID].y);
+      //goal_point is the point which will be blocked by the intercepter
+      Vector2D<int> goal_point(OUR_GOAL_X, 0.0f);
       Vector2D<int> destination; float destinationSlope;
       float ballFromBot = Vector2D<int>::dist(ballPos, botPos);
       float ballFromPasser = Vector2D<int>::dist(ballPos, passerBot);
@@ -92,7 +94,15 @@ namespace Strategy {
       Strategy::SkillSet::SkillID sID;
       SkillSet::SParam sParam;
       if(ballFromOpp < ballFromBot) {
-        destination = 0.7 * markBot + 0.3 * passerBot;
+
+        //where == 0 corresponds to intercepting the pass
+        if(tParam.InterceptP.where == 0){
+          destination = 0.7 * markBot + 0.3 * passerBot;
+        }
+        else{
+          //intercept the goal shot
+          destination = 0.7 * markBot + 0.3 * goal_point;
+        }
         destinationSlope = Vector2D<int>::angle(passerBot,botPos);
         
         float pointFromBot = Vector2D<int>::dist(destination, botPos);
@@ -148,6 +158,7 @@ namespace Strategy {
       Document d;
       d.Parse(json.c_str());
       tParam.InterceptP.awayBotID = d["awayBotID"].GetDouble();
+      tParam.InterceptP.where = d["where"].GetDouble();
       return tParam;
 
     }
@@ -159,6 +170,8 @@ namespace Strategy {
       w.StartObject();
       w.String("awayBotID");
       w.Double(tParam.InterceptP.awayBotID);
+      w.String("where");
+      w.Double(tParam.InterceptP.where);
       w.EndObject();
       return buffer.GetString();
     }
