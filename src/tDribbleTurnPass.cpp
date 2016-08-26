@@ -22,13 +22,19 @@ namespace Strategy
 
   bool TDribbleTurnPass::isCompleted(const BeliefState &bs,const Tactic::Param& tParam) const {
     Vector2D<int> botPos(bs.homePos[botID].x, bs.homePos[botID].y);
+    Vector2D<int> point(tParam.DribbleTurnPassP.x, tParam.DribbleTurnPassP.y);
     Vector2D<int> ballPos(bs.ballPos.x, bs.ballPos.y);
     Vector2D<int> ballVel(bs.ballVel.x, bs.ballVel.y);
+    float ballBotAngle = Vector2D<int>::angle(botPos,ballPos);
+    float pointBotAngle = Vector2D<int>::angle(botPos, point);
 
     float ballDist = Vector2D<int>::dist(botPos, ballPos);
-    bool ballKicked=false;
-    if(ballVel.x/fabs(ballVel.x)==(ballPos.x-botPos.x)/fabs(ballPos.x-botPos.x)) ballKicked=true;
-    if(ballDist<1.5*DRIBBLER_BALL_THRESH && ballKicked==true) return true;
+   
+    //if the ball is within a radius of the bot and travelling away from the bot then it is assumed to have been kicked
+  
+     if(ballDist>1.6*DRIBBLER_BALL_THRESH && ballVel.x/fabs(ballVel.x)==(ballPos.x-botPos.x)/fabs(ballPos.x-botPos.x) && \
+        ballVel.x/fabs(ballVel.x)==(tParam.PassToPointP.x-ballPos.x)/fabs((tParam.PassToPointP.x-ballPos.x))) 
+    return true;
     return false;
   }
   
