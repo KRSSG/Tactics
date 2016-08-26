@@ -47,11 +47,14 @@ namespace Strategy{
 			}
 		}
 
-		for(std::list<int>::const_iterator itr = freebots.begin(); itr != freebots.end(); ++itr){
+		for(std::list<int>::const_iterator itr = freeBots.begin(); itr != freeBots.end(); ++itr){
 			for(int i = 0; i < away_bots_on_our_goalie_side.size(); ++i){
-				if(Vector2D<float>::dist(state.awayPos[away_bots_on_our_goalie_side[i]], state.homePos[*itr]) < min_dis){
+				Vector2D<int> awayBotPos(state.awayPos[away_bots_on_our_goalie_side[i]].x,state.awayPos[away_bots_on_our_goalie_side[i]].y);
+				//Vector2D<int> homeBotPos(state.homePos[botID].x, state.homePos[botID].y);
+				Vector2D<int> homeBotPos(state.homePos[*itr].x, state.homePos[*itr].y);
+				if(Vector2D<int>::dist(awayBotPos,homeBotPos) < min_dis){
 					best_bot = *itr;
-					min_dis = Vector2D<float>::dist(state.awayBotID[away_bots_on_our_goalie_side[i]], state.homeBotID[*itr]);
+					min_dis = Vector2D<int>::dist(awayBotPos,homeBotPos);
 				}
 			}
 		}
@@ -60,10 +63,6 @@ namespace Strategy{
 	}
 
 	gr_Robot_Command TMark::execute(const BeliefState &state, const Tactic::Param& tParam){
-
-
-
-
 		Vector2D<int> ballAim, marked, guardPos;
 		Vector2D<int> botpos (state.homePos[botID].x, state.homePos[botID].y);
 		Vector2D<int> ballPos(state.ballPos.x, state.ballPos.y);
