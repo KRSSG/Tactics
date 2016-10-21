@@ -9,6 +9,7 @@
 #include <ssl_common/geometry.hpp>
 #include <skills/skillSet.h>
 #include <fstream>
+#include <cmath>
 
 #define THRES (0.6f)
 #define TEAMSIZE (6)
@@ -24,6 +25,30 @@ namespace Strategy
   TKickToGoal::~TKickToGoal() { } 
 
   bool TKickToGoal::isCompleted(const BeliefState &bs,const Tactic::Param& tParam) const {
+    Vector2D<int> botPos(bs.homePos[botID].x, bs.homePos[botID].y);
+    Vector2D<int> point(tParam.DribbleTurnPassP.x, tParam.DribbleTurnPassP.y);
+    Vector2D<int> ballPos(bs.ballPos.x, bs.ballPos.y);
+    Vector2D<int> ballVel(bs.ballVel.x, bs.ballVel.y);
+    float theta=bs.homePos[botID].theta;
+
+    float ballBotAngle = Vector2D<int>::angle(botPos,ballPos);
+    float pointBotAngle = Vector2D<int>::angle(botPos, point);
+
+    float ballDist = Vector2D<int>::dist(botPos, ballPos);
+   
+    //if the ball is within a radius of the bot and travelling away from the bot then it is assumed to have been kicked
+    fstream f;
+    f.open("/home/ssl/catkin_ws/src/plays/passCompleted.txt",fstream::out|fstream::app);
+     // if(ballDist>2*DRIBBLER_BALL_THRESH && ballVel.x/fabs(ballVel.x)==(ballPos.x-botPos.x)/fabs(ballPos.x-botPos.x) && \
+     //    ballVel.x/fabs(ballVel.x)==(tParam.PassToPointP.x-ballPos.x)/fabs((tParam.PassToPointP.x-ballPos.x))) 
+    if(ballDist<2*DRIBBLER_BALL_THRESH && (cos(theta)*ballVel.x+sin(theta)*ballVel.y)/(sqrt(cos(theta)*cos(theta)+sin(theta)*sin(theta))*sqrt(ballVel.x*ballVel.x+ballVel.y*ballVel.y))<cos(10*PI/180))
+    {
+      f<<"completed"<<endl;
+      f.close();
+      return true;
+    }
+    f<<"nopes"<<endl;
+    f.close();
     return false;
   }
   
