@@ -50,7 +50,6 @@ namespace Strategy{
 		for(std::list<int>::const_iterator itr = freeBots.begin(); itr != freeBots.end(); ++itr){
 			for(int i = 0; i < away_bots_on_our_goalie_side.size(); ++i){
 				Vector2D<int> awayBotPos(state.awayPos[away_bots_on_our_goalie_side[i]].x,state.awayPos[away_bots_on_our_goalie_side[i]].y);
-				//Vector2D<int> homeBotPos(state.homePos[botID].x, state.homePos[botID].y);
 				Vector2D<int> homeBotPos(state.homePos[*itr].x, state.homePos[*itr].y);
 				if(Vector2D<int>::dist(awayBotPos,homeBotPos) < min_dis){
 					best_bot = *itr;

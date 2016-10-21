@@ -30,12 +30,8 @@ namespace Strategy{
 		Vector2D<int> botPos(bs.homePos[botID].x, bs.homePos[botID].y);
 	    Vector2D<int> ballPos(bs.ballPos.x, bs.ballPos.y);
 	    float ballDist = Vector2D<int>::dist(botPos, ballPos);
-	    fstream f;
-	    f.open("/home/gunjan/catkin_ws/src/play/receive.txt",fstream::out|fstream::app);
-	    f<<"here"<<endl;
-	    if(ballDist<1.2*DRIBBLER_BALL_THRESH) f<<"completed"<<endl;
-	    f.close();
-	    if(ballDist<1.2*DRIBBLER_BALL_THRESH) return true;
+	    if(ballDist<2*DRIBBLER_BALL_THRESH) 
+	    	return true;
 	    return false;
 	}
 	bool TAttackSupport1_Center::isActiveTactic(void)const{
