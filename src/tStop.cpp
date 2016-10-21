@@ -20,7 +20,7 @@ namespace Strategy
     { } // ~TStop
     bool TStop::isCompleted(const BeliefState &bs,const Tactic::Param& tParam) const {
       // should add relevant logic here
-      return false;
+      return true;
     }
     bool TStop::isActiveTactic(void) const
     {

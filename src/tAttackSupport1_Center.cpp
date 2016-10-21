@@ -30,8 +30,9 @@ namespace Strategy{
 		Vector2D<int> botPos(bs.homePos[botID].x, bs.homePos[botID].y);
 	    Vector2D<int> ballPos(bs.ballPos.x, bs.ballPos.y);
 	    float ballDist = Vector2D<int>::dist(botPos, ballPos);
-	    
-	    if(ballDist<1.2*DRIBBLER_BALL_THRESH)return true;
+
+	    if(ballDist<2*DRIBBLER_BALL_THRESH) 
+	    	return true;
 	    return false;
 	}
 	bool TAttackSupport1_Center::isActiveTactic(void)const{

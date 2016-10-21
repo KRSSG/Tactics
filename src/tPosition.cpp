@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <ssl_common/geometry.hpp>
 #include <skills/skillSet.h>
+#include <fstream>
 namespace Strategy
 {
 
@@ -20,6 +21,11 @@ namespace Strategy
     TPosition::~TPosition()
     { } // ~TPosition
     bool TPosition::isCompleted(const BeliefState &bs,const Tactic::Param& tParam) const {
+      Vector2D<int> botpos(bs.homePos[botID].x,bs.homePos[botID].y);
+      Vector2D<int> tGoToPoint(tParam.PositionP.x, tParam.PositionP.y);
+      float dis_from_point = sqrt((botpos - tGoToPoint).absSq());
+      if(dis_from_point<2*BOT_POINT_THRESH)
+        return true;
       return false;
     }
     bool TPosition::isActiveTactic(void) const
