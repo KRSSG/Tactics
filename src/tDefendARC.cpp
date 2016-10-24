@@ -42,10 +42,22 @@ namespace Strategy {
 	}//isActiveTactic
 
 	int TDefendARC::chooseBestBot(const BeliefState& state, std::list<int>& freebots, const Param& tParam, int prevID) const {
-		Vector2D<float> P1(tParam.DefendARCP.x1, tParam.DefendARCP.y1);
-		Vector2D<float> P2(tParam.DefendARCP.x2, tParam.DefendARCP.y2);
+		Vector2D<float> p_threat;
+		Vector2D<float> upper_limit(-HALF_FIELD_MAXX, OUR_GOAL_MAXY / 1.30f);
+		Vector2D<float> lower_limit(upper_limit.x, -1 * upper_limit.y);
+		Vector2D<float> sol_right;
+		Vector2D<float> sol_left;
+        Vector2D<float> C(-HALF_FIELD_MAXX, 0.0f);
+        float R = HALF_FIELD_MAXY / 2.5f;
+
+		p_threat.x = state.ballPos.x;
+		p_threat.y = state.ballPos.y;
+		inter_circle_and_line(p_threat, upper_limit, C, R, sol_left);
+        inter_circle_and_line(p_threat, lower_limit, C, R, sol_right);
+
+		Vector2D<float> P1(sol_left.x, sol_left.y);
+		Vector2D<float> P2(sol_right.x, sol_right.y);
 		Vector2D<float> dPoint((P1.x + P2.x)/ 2.0f, (P1.y + P2.y) / 2.0f);
-		float R = HALF_FIELD_MAXY / 2.5f;
 		int best_bot = -1;
 		float min_dis = 999999.9f;
 
@@ -132,17 +144,17 @@ namespace Strategy {
 		        //calculate the points of intersection of line and the circle
 		       // inter_circle_and_line(p_threat, upper_limit, C, R, sol_left);
         		//inter_circle_and_line(p_threat, lower_limit, C, R, sol_right);
-		        //inter_circle_and_line(p_threat, C, C, R, sol_mid);
+		        //inter_circle_and_line(p _threat, C, C, R, sol_mid);
 
 		        //go to the point and anticipate for the ball
 		        //just for testing purpose side = 0 //represents the left side
 		        if(tParam.DefendARCP.side == 0) {
-			        sParam.GoToPointP.x = sol_left.x; //(sol_left.x + sol_mid.x) / 2.0f;
-		            sParam.GoToPointP.y = sol_left.y; //(sol_left.y + sol_mid.y) / 2.0f;
+			        sParam.GoToPointP.x = (sol_left.x + sol_mid.x) / 2.0f;
+		            sParam.GoToPointP.y = (sol_left.y + sol_mid.y) / 2.0f;
 		        }
 		        else if(tParam.DefendARCP.side == 1){
-			        sParam.GoToPointP.x = sol_right.x; //(sol_right.x + sol_mid.x) / 2.0f;
-		            sParam.GoToPointP.y = sol_right.y;  //(sol_right.y + sol_mid.y) / 2.0f;
+			        sParam.GoToPointP.x = (sol_right.x + sol_mid.x) / 2.0f;
+		            sParam.GoToPointP.y = (sol_right.y + sol_mid.y) / 2.0f;
 		        }
 		        else {
 		        	sParam.GoToPointP.x = sol_mid.x;
