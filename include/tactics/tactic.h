@@ -124,7 +124,7 @@ namespace Strategy
       } PassToPointP,ReceiveP;
       
       struct DefendARc_left
-      { } DefendARCP_left;
+      { } DefendARCP_left; 
 
       struct DefendARc_right
       { } DefendARCP_right;      

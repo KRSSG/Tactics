@@ -157,7 +157,7 @@ namespace Strategy {
 	} //execute
 
     Tactic::Param TDefendARC_left::paramFromJSON(string json) {
-      using namespace rapidjson;
+      using namespace rapidjson; 
       Tactic::Param tParam;
       return tParam;
     }

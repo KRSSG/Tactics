@@ -197,7 +197,7 @@ set (tacticsSrc
   src/tAttackSupport1_Center.cpp
   src/tDribbleTurnPass.cpp
   src/tDefendARC_left.cpp
-  src/tDefendARC_right.cpp
+  src/tDefendARC_right.cpp 
   )
 
 

@@ -150,7 +150,7 @@ namespace Strategy {
 			case KICK:
 			{
 			    sID = SkillSet::Kick;
-			    sParam.KickP.power = 7.0f;	
+			    sParam.KickP.power = 7.0f; 	
 			}
 		}//switch case statement
 		cout << "right: " << sParam.GoToPointP.x << "\t" <<  sParam.GoToPointP.y;

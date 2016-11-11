@@ -15,7 +15,7 @@ namespace Strategy {
 	public:
 
 		TDefendARC_left(int botID);
-		 ~TDefendARC_left();
+		 ~TDefendARC_left(); 
 
 		 virtual bool isCompleted(const BeliefState& state,const Tactic::Param& tParam) const;
 		 virtual bool isActiveTactic(void) const;

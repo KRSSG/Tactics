@@ -14,7 +14,7 @@ namespace Strategy {
 	class TDefendARC_right : public Tactic {
 	public:
 
-		TDefendARC_right(int botID);
+		TDefendARC_right(int botID); 
 		 ~TDefendARC_right();
 
 		 virtual bool isCompleted(const BeliefState& state,const Tactic::Param& tParam) const;
