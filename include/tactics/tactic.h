@@ -123,16 +123,11 @@ namespace Strategy
         float y;
       } PassToPointP,ReceiveP;
       
-        struct DefendARc
-      {
-        float x1;
-        float x2;
-        float y1;
-        float y2;
-        float xc;
-        float yc;
-        int side;
-      }DefendARCP;
+      struct DefendARc_left
+      { } DefendARCP_left;
+
+      struct DefendARc_right
+      { } DefendARCP_right;      
       
       struct InterecptP {
         int awayBotID;
