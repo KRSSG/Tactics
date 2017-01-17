@@ -26,9 +26,20 @@ namespace Strategy
     Vector2D<int> ballVel(bs.ballVel.x, bs.ballVel.y);
 
     float ballDist = Vector2D<int>::dist(botPos, ballPos);
-    bool ballKicked=false;
-    if(ballVel.x/fabs(ballVel.x)==(ballPos.x-botPos.x)/fabs(ballPos.x-botPos.x)) ballKicked=true;
-    if(ballDist<1.5*DRIBBLER_BALL_THRESH && ballKicked==true) return true;
+
+    //if the ball is within a radius of the bot and travelling away from the bot then it is assumed to have been kicked
+    fstream f;
+    f.open("/home/ssl/catkin_ws/src/plays/passCompleted.txt",fstream::out|fstream::app);
+     if(ballDist>1.6*DRIBBLER_BALL_THRESH && ballVel.x/fabs(ballVel.x)==(ballPos.x-botPos.x)/fabs(ballPos.x-botPos.x) && \
+        ballVel.x/fabs(ballVel.x)==(tParam.PassToPointP.x-ballPos.x)/fabs((tParam.PassToPointP.x-ballPos.x))) 
+    {
+      f<<"completed";
+      f.close();
+      return true;
+    }
+    f<<"nopes"<<endl;
+    f.close();
+
     return false;
   }
   
