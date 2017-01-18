@@ -188,7 +188,6 @@ set (tacticsSrc
   src/tStop.cpp
   src/tKickToGoal.cpp
   src/tGoToBall.cpp
-  src/tDefendARC.cpp
   src/tIntercept.cpp
   src/tPassToPoint.cpp
   src/tReceive.cpp
@@ -197,6 +196,8 @@ set (tacticsSrc
   src/tAttackSupport1_Wing.cpp
   src/tAttackSupport1_Center.cpp
   src/tDribbleTurnPass.cpp
+  src/tDefendARC_left.cpp
+  src/tDefendARC_right.cpp 
   )
 
 

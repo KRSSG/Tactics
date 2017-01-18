@@ -1,6 +1,6 @@
 #include <list>
 #include <ros/ros.h>
-#include "tDefendARC.hpp"
+#include "tDefendARC_left.hpp"
 #include "skills/skillSet.h"
 #include "rapidjson/document.h"
 #include "rapidjson/writer.h"
@@ -12,7 +12,7 @@
 #include <skills/skillSet.h>
 
 #define sgn(x) (((x)<0)?(-1):(1))
-
+#define TEAMSIZE (6)
 
 		/*
 		#####################
@@ -27,23 +27,24 @@
 
 namespace Strategy {
 
-	TDefendARC::TDefendARC(int botID) : Tactic(botID) {
+	TDefendARC_left::TDefendARC_left(int botID) : Tactic(botID) {
 		iState = POSITION;
 	}
 
-	TDefendARC::~TDefendARC() {}
+	TDefendARC_left::~TDefendARC_left() {}
 
-	bool TDefendARC::isCompleted(const BeliefState& state,const Tactic::Param& tParam) const {
-		return iState == KICK;
+	bool TDefendARC_left::isCompleted(const BeliefState& state,const Tactic::Param& tParam) const {
+		return false;
 	}//isCompleted
 
-	inline bool TDefendARC::isActiveTactic(void) const {
+	inline bool TDefendARC_left::isActiveTactic(void) const {
 		return iState != KICK;
 	}//isActiveTactic
 
-	int TDefendARC::chooseBestBot(const BeliefState& state, std::list<int>& freebots, const Param& tParam, int prevID) const {
+	int TDefendARC_left::chooseBestBot(const BeliefState& state, std::list<int>& freebots, const Param& tParam, int prevID) const {
 		Vector2D<float> p_threat;
-		Vector2D<float> upper_limit(-HALF_FIELD_MAXX, OUR_GOAL_MAXY / 1.30f);
+		// Vector2D<float> upper_limit(-HALF_FIELD_MAXX, 0);
+		Vector2D<float> upper_limit(-HALF_FIELD_MAXX, OUR_GOAL_MAXY *(2.0/ 3.0f));
 		Vector2D<float> lower_limit(upper_limit.x, -1 * upper_limit.y);
 		Vector2D<float> sol_right;
 		Vector2D<float> sol_left;
@@ -53,20 +54,16 @@ namespace Strategy {
 		p_threat.x = state.ballPos.x;
 		p_threat.y = state.ballPos.y;
 		inter_circle_and_line(p_threat, upper_limit, C, R, sol_left);
-        inter_circle_and_line(p_threat, lower_limit, C, R, sol_right);
-
 		Vector2D<float> P1(sol_left.x, sol_left.y);
-		Vector2D<float> P2(sol_right.x, sol_right.y);
-		Vector2D<float> dPoint((P1.x + P2.x)/ 2.0f, (P1.y + P2.y) / 2.0f);
 		int best_bot = -1;
 		float min_dis = 999999.9f;
 
 		//iterate over all the bots and see the one closest to the point
 		for(std::list<int>::const_iterator itr = freebots.begin(); itr != freebots.end(); ++itr) {
 			Vector2D<float> bot(state.homePos[*itr].x, state.homePos[*itr].y);
-			if(Vector2D<float>::dist(dPoint, bot) < min_dis){
+			if(Vector2D<float>::dist(P1, bot) < min_dis){
 				best_bot = *itr;
-				min_dis = Vector2D<float>::dist(dPoint, bot);
+				min_dis = Vector2D<float>::dist(P1, bot);
 			}
 		}
 
@@ -74,45 +71,60 @@ namespace Strategy {
 		return best_bot;
 	}//choosebestbot
 
-	gr_Robot_Command TDefendARC::execute(const BeliefState& state, const Param& tParam) {
+	gr_Robot_Command TDefendARC_left::execute(const BeliefState& state, const Param& tParam) {
 		Vector2D<float> P1;
 		Vector2D<float> P2;
 		Vector2D<float> C(-HALF_FIELD_MAXX, 0.0f);
-		//Vector2D<float> homePos(state.homePos[botID].x, state.homePos[botID].y);
-		//Vector2D<float> mid_arc((P1.x + P2.x)/2.0, (P1.y + P2.y)/2.0);
-		//Vector2D<float> origin(0.0f, 0.0f);
+		Vector2D<float> botPos(state.homePos[botID].x, state.homePos[botID].y);
 		Vector2D<float> dPoint;
-		Vector2D<float> tP1;
-		Vector2D<float> tP2;
-		//Vector2D<float> t_homePos;
+		float min_dis = 999999.9f;
+		int sel_bID=-1;
+
 		Vector2D<float> p_threat;
-		Vector2D<float> sol_right;
 		Vector2D<float> sol_mid;
-		Vector2D<float> sol_left;
-		Vector2D<float> upper_limit(-HALF_FIELD_MAXX, OUR_GOAL_MAXY / 1.30f);
-		Vector2D<float> lower_limit(upper_limit.x, -1 * upper_limit.y);
 		Vector2D<float> ballPos(state.ballPos.x, state.ballPos.y);
 		Vector2D<float> p_def(state.homePos[botID].x, state.homePos[botID].y);
-		Vector2D<float> mid_arc;
+		Vector2D<float> other_bot;
 		p_threat.x = state.ballPos.x;
 		p_threat.y = state.ballPos.y;
-		float R = HALF_FIELD_MAXY / 2.5f;
+		float R = HALF_FIELD_MAXY / 2.3f;
+		float delta_x = 0 * BOT_RADIUS;
+		float delta_y = 2.7 * BOT_RADIUS;
 
-		inter_circle_and_line(p_threat, upper_limit, C, R, sol_left);
-        inter_circle_and_line(p_threat, lower_limit, C, R, sol_right);
 		inter_circle_and_line(p_threat, C, C, R, sol_mid);
 
-		//mid_arc.x = (sol_left.x + sol_right.x ) / 2.0f;
-		//mid_arc.y = (sol_left.y + sol_right.y ) / 2.0f;
-
 		//decide the internal state of the bot
-		if(Vector2D<float>::dist(ballPos, mid_arc) >= DRIBBLER_BALL_THRESH * 1.3){
+		if(Vector2D<float>::dist(ballPos, botPos) >= DRIBBLER_BALL_THRESH * 5){
 			iState = POSITION;
 		}
-		else {
-			iState = KICK;
+		else if(Vector2D<float>::dist(ballPos, botPos) <= DRIBBLER_BALL_THRESH * 5
+			   && (Vector2D<float>::dist(ballPos, botPos) > DRIBBLER_BALL_THRESH * 1.3)){
+			/*
+			  iterate over all the bots and 
+			  select the primary defender which is closest to the ball 
+			*/	
+			for(int bID = 0; bID < TEAMSIZE; bID++){
+				other_bot.x = state.homePos[bID].x; 
+				other_bot.y = state.homePos[bID].y;
+
+				float distance = Vector2D<float>::dist(other_bot, ballPos);
+				if(distance < min_dis){
+					min_dis = distance;
+					sel_bID = bID;
+				}
+			}
+			if(sel_bID == botID)
+				iState = GO_TO_BALL;
+			else
+				iState = POSITION;
 		}
-		
+		else {
+			if (Vector2D<float>::dist(botPos, ballPos) < DRIBBLER_BALL_THRESH)
+				iState = KICK;
+			else
+				iState = GO_TO_BALL;
+		}
+
 		//float R = HALF_FIELD_MAXY / 2.5f;
 		Strategy::SkillSet::SkillID sID;
 		SkillSet::SParam sParam;
@@ -121,117 +133,40 @@ namespace Strategy {
 			case POSITION:
 			{
 				sID = SkillSet::GoToPoint;
-		        //transform the co-ordinates into the center's reference frame 
-		        //tP1.x = P1.x - C.x;
-		        //tP1.y = P1.y - C.y;
-		        //tP2.x = P2.x - C.x;
-		        //tP2.y = P2.y - C.y;
 
-		    /*    //calculate the open angle from the primary  threat
-		        int pt = primary_threat(state);
-		        pt = -1;
-		        if(pt == -1){
-			       p_threat.x = state.ballPos.x;
-			       p_threat.y = state.ballPos.y;
-		        }
-		        else {
-			       p_threat.x = state.awayPos[pt].x;
-		           p_threat.y = state.awayPos[pt].y;
-		        }
-
-		     */
-
-		        //calculate the points of intersection of line and the circle
-		       // inter_circle_and_line(p_threat, upper_limit, C, R, sol_left);
-        		//inter_circle_and_line(p_threat, lower_limit, C, R, sol_right);
-		        //inter_circle_and_line(p _threat, C, C, R, sol_mid);
-
-		        //go to the point and anticipate for the ball
-		        //just for testing purpose side = 0 //represents the left side
-		        if(tParam.DefendARCP.side == 0) {
-			        sParam.GoToPointP.x = (sol_left.x + sol_mid.x) / 2.0f;
-		            sParam.GoToPointP.y = (sol_left.y + sol_mid.y) / 2.0f;
-		        }
-		        else if(tParam.DefendARCP.side == 1){
-			        sParam.GoToPointP.x = (sol_right.x + sol_mid.x) / 2.0f;
-		            sParam.GoToPointP.y = (sol_right.y + sol_mid.y) / 2.0f;
-		        }
-		        else {
-		        	sParam.GoToPointP.x = sol_mid.x;
-		        	sParam.GoToPointP.y = sol_mid.y;
-		        }
-
-		        //decide to whether kick or dribble or pass the ball
-		        sParam.GoToPointP.finalslope = atan2((p_threat.y - state.homePos[botID].y), (p_threat.x - state.homePos[botID].x));
+		        sParam.GoToPointP.x = sol_mid.x - delta_x;
+	            sParam.GoToPointP.y = sol_mid.y - delta_y;				
 		        sParam.GoToPointP.align = true;
 		        sParam.GoToPointP.finalVelocity = 0.0f;
-		        //ROS_INFO("atan2 = %f", atan2((p_threat.y - state.homePos[botID].y), (p_threat.x - state.homePos[botID].x)));
+		        sParam.GoToPointP.finalslope = atan2( (state.ballPos.y - state.homePos[botID].y) , (state.ballPos.x - state.homePos[botID].x));
 		        break;
 			}
 			case GO_TO_BALL:
 			{
 				sID = SkillSet::GoToBall;
-				break;
 			}
 			case KICK:
 			{
-				if(Vector2D<float>::dist(mid_arc, ballPos) >= DRIBBLER_BALL_THRESH )
-					sID = SkillSet::GoToBall;
-				else{
-				    sID = SkillSet::Kick;
-				    sParam.KickP.power = 7.0f;	
-				}
-				break;
+			    sID = SkillSet::Kick;
+			    sParam.KickP.power = 7.0f;	
 			}
 		}//switch case statement
+		cout << "left: " << sParam.GoToPointP.x << "\t" <<  sParam.GoToPointP.y;
         return SkillSet::instance()->executeSkill(sID, sParam, state, botID);
 
 	} //execute
 
-	string TDefendARC::paramToJSON(Tactic::Param tParam) {
-		using namespace rapidjson;
-		StringBuffer buffer;
-		Writer<StringBuffer> w(buffer);
+    Tactic::Param TDefendARC_left::paramFromJSON(string json) {
+      using namespace rapidjson; 
+      Tactic::Param tParam;
+      return tParam;
+    }
 
-		w.StartObject();
-		w.String("x1");
-		w.Double(tParam.DefendARCP.x1);
-		w.String("x2");
-		w.Double(tParam.DefendARCP.x2);
-		w.String("y1");
-		w.Double(tParam.DefendARCP.y1);
-		w.String("y2");
-		w.Double(tParam.DefendARCP.y2);
-		w.String("xc");
-		w.Double(tParam.DefendARCP.xc);
-		w.String("yc");
-		w.Double(tParam.DefendARCP.yc);
-		w.String("side");
-		w.Double(tParam.DefendARCP.side);
-		w.EndObject();
+    string TDefendARC_left::paramToJSON(Tactic::Param tParam) {
+      return string("");
+    }
 
-		return buffer.GetString();
-
-	}//paramToJSON
-
-	Tactic::Param TDefendARC::paramFromJSON(string json) {
-		using namespace rapidjson;
-		Tactic::Param tParam;
-		Document d;
-
-		d.Parse(json.c_str());
-		tParam.DefendARCP.x1 = d["x1"].GetDouble();
-		tParam.DefendARCP.x2 = d["x2"].GetDouble();
-		tParam.DefendARCP.y1 = d["y1"].GetDouble();
-		tParam.DefendARCP.y2 = d["y2"].GetDouble();
-		tParam.DefendARCP.xc = d["xc"].GetDouble();
-		tParam.DefendARCP.yc = d["yc"].GetDouble();
-		tParam.DefendARCP.side = d["side"].GetDouble();
-
-		return tParam;
-	}//paramFromJSON
-
-	int TDefendARC::primary_threat(const BeliefState& state) const {
+	int TDefendARC_left::primary_threat(const BeliefState& state) const {
 		std::vector<int> away_in_our_side;
 		float thresh = 100000.0f;
 		int threat = -1;
@@ -264,7 +199,7 @@ namespace Strategy {
 		}
 	}//primary_threat
 
-	void TDefendARC::inter_circle_and_line(Vector2D<float> P1, Vector2D<float> P2, Vector2D<float> C, float R, Vector2D<float>& P) const {
+	void TDefendARC_left::inter_circle_and_line(Vector2D<float> P1, Vector2D<float> P2, Vector2D<float> C, float R, Vector2D<float>& P) const {
 		//here P1 always represents the threat position
 		float tx1, tx2, ty1, ty2;
 		float dx, dy, dr, D;
@@ -274,9 +209,12 @@ namespace Strategy {
 		tx2 = P2.x - C.x;
 		ty1 = P1.y - C.y;
 		ty2 = P2.y - C.y;
+		
+		/*
+			calculate the intersection of the line and circle of radius R
+			http://mathworld.wolfram.com/Circle-LineIntersection.html
+		*/
 
-		//calculate the intersection of the line and circle of radius R
-		//http://mathworld.wolfram.com/Circle-LineIntersection.html
 		dx  = tx2 - tx1;
 		dy  = ty2 - ty1;
 		dr  = sqrt(pow(dx, 2) + pow(dy, 2));
@@ -304,7 +242,7 @@ namespace Strategy {
 		P.y = P.y + C.y;
 	}//inter_circle_and_line function
 
-	bool TDefendARC::ball_velocity_direction(const BeliefState& state) const {
+	bool TDefendARC_left::ball_velocity_direction(const BeliefState& state) const {
 		Vector2D<float> ball_vel(state.ballVel.x, state.ballVel.y);
 		Vector2D<float> ball_pos(state.ballPos.x, state.ballPos.y);
 		Vector2D<float> Upper_limit(-HALF_FIELD_MAXX, OUR_GOAL_MAXY / 1.2f + BOT_BALL_THRESH);
@@ -380,4 +318,4 @@ namespace Strategy {
 
 */
 
-}//namespace strategy
+} //namespace strategy

@@ -37,6 +37,7 @@
         GOTOBALL,
         FINISHED,
       } iState;
+    Vector2D<int> receivePoint;
   };
   REGISTER_TACTIC(TReceive)
 } 
