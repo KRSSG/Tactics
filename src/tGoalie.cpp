@@ -13,7 +13,7 @@
 #define KICK_RANGE_THRESH 3 * MAX_DRIBBLE_R
 #define THRES (0.8f)
 #define THETA_THRESH 0.005
-
+#define SHIFT 0//HALF_FIELD_MAXX/3
 
 
 namespace Strategy{
@@ -29,13 +29,14 @@ namespace Strategy{
 
 	bool TGoalie::isCompleted(const BeliefState &bs,const Tactic::Param& tParam) const{
 		//add logic
-		return true;
+		return false;
 	}
 	bool TGoalie::isActiveTactic(void)const{
 		return true;
 	}
 
 	int TGoalie::chooseBestBot(const BeliefState &state, std::list<int>& freeBots, const Param& tParam, int prevID) const{
+      return 1;
 	  int minv   = *(freeBots.begin());
       int mindis = 1000000;
       Vector2D<int> tGoToPoint(-HALF_FIELD_MAXX, 0);
@@ -71,23 +72,28 @@ namespace Strategy{
 		
 		
 		float dist = Vector2D<int>::dist(ballPos, botpos);
-		if(sqrt(ballVel.absSq()) < MAX_BOT_SPEED && abs(state.ballPos.y) < OUR_GOAL_MAXY && state.ballPos.x  > (HALF_FIELD_MAXX - 2 * DBOX_WIDTH)){	//Invert sign on Side Change
+		if(sqrt(ballVel.absSq()) < MAX_BOT_SPEED && abs(state.ballPos.y) < OUR_GOAL_MAXY && state.ballPos.x  > (HALF_FIELD_MAXX /*- (2 * DBOX_WIDTH)*/ - (HALF_FIELD_MAXX/3) )){	//Invert sign on Side Change
 			if(dist >= DRIBBLER_BALL_THRESH){
-				sID = SkillSet::GoToBall;						
+				sID = SkillSet::GoToPoint;
+				sParam.GoToPointP.x = state.ballPos.x;// - SHIFT/2;//state.ballPos.x;													
+				sParam.GoToPointP.y = state.ballPos.y;													
+			 	sParam.GoToPointP.finalVelocity = 0;													
+			 	sParam.GoToPointP.finalslope = atan2( (state.ballPos.y - state.homePos[botID].y) , (state.ballPos.x - state.homePos[botID].x));									
+					
 				return SkillSet::instance()->executeSkill(sID, sParam, state, botID);	 
 			}
 			else{
 				sID = SkillSet::Kick;
-				sParam.KickP.power = 10.0f;							
+				sParam.KickP.power = 7.0f;							
 				return SkillSet::instance()->executeSkill(sID, sParam, state, botID);    	
 			}
 
 		}
 		
-		float default_x = -HALF_FIELD_MAXX + DBOX_WIDTH/2;														//Invert Signs on Side Change
+		float default_x = HALF_FIELD_MAXX - SHIFT;														//Invert Signs on Side Change
 
-		if(state.ballPos.x < (-HALF_FIELD_MAXX + (1.5 * DBOX_WIDTH)) && state.ballPos.x > -HALF_FIELD_MAXX)												//Invert Signs on Side Change
-			goalieTarget.x = -HALF_FIELD_MAXX + BOT_RADIUS + BALL_RADIUS;													//Invert Signs on Side Change
+		if(state.ballPos.x > (HALF_FIELD_MAXX - SHIFT) && state.ballPos.x < HALF_FIELD_MAXX )												//Invert Signs on Side Change
+			goalieTarget.x = HALF_FIELD_MAXX - SHIFT;													//Invert Signs on Side Change
 		else
 			goalieTarget.x = default_x;
 		
@@ -115,7 +121,7 @@ namespace Strategy{
 				goalieTarget.y = state.ballPos.y;
 			}
 			else{
-				if(state.ballVel.x > 0)
+				if(state.ballVel.x > 0)																																							//invert sign	
 					goalieTarget.y 	= (( state.ballVel.y / state.ballVel.x ) * ( goalieTarget.x - state.ballPos.x ) ) + state.ballPos.y;
 				else
 					goalieTarget.y 	= 0;
@@ -133,8 +139,9 @@ namespace Strategy{
 		sParam.GoToPointP.x = goalieTarget.x;													
 		sParam.GoToPointP.y = goalieTarget.y;													
 	 	sParam.GoToPointP.finalVelocity = 0;													
+	 	// sParam.GoToPointP.finalslope = 0;									
 	 	sParam.GoToPointP.finalslope = atan2( (state.ballPos.y - state.homePos[botID].y) , (state.ballPos.x - state.homePos[botID].x));									
-
+	 	cout<<"in goalieeeee ------------------- moving to : "<<sParam.GoToPointP.x<<","<<sParam.GoToPointP.y<<endl;
 	 	return SkillSet::instance()->executeSkill(sID, sParam, state, botID);							
 
 
