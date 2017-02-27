@@ -5,6 +5,7 @@
 #include "rapidjson/writer.h"
 #include "rapidjson/stringbuffer.h"
 #include <iostream>
+#include <fstream>
 #include <stdio.h>
 #include <ssl_common/geometry.hpp>
 #include <skills/skillSet.h>
@@ -21,6 +22,12 @@ namespace Strategy
 
     bool TGoToBall::isCompleted(const BeliefState &bs,const Tactic::Param& tParam) const 
     {
+      Vector2D<int> botpos(bs.homePos[botID].x,bs.homePos[botID].y);
+      Vector2D<int> ballPos(bs.ballPos.x, bs.ballPos.y);
+      float dis_from_point = sqrt((botpos - ballPos).absSq());
+      float angle = normalizeAngle(Vector2D<int>::angle(ballPos, botpos) - (bs.homePos[botID].theta));
+      if(dis_from_point<3*BOT_POINT_THRESH && abs(angle) < 0.2)
+        return true;
       return false;
     }
     inline bool TGoToBall::isActiveTactic(void) const
@@ -45,6 +52,7 @@ namespace Strategy
           		minv = *it;
         	}
       	}
+        return 1;
       	return minv;
     }
 
@@ -56,28 +64,45 @@ namespace Strategy
         dist = Vector2D<int>::dist(ballPos, botPos);
         SkillSet::SParam sParam;
 
-    	  if(dist > DRIBBLER_BALL_THRESH)
+        float dis_from_point = sqrt((botPos - ballPos).absSq());
+        float angle = normalizeAngle(Vector2D<int>::angle(ballPos, botPos) - (state.homePos[botID].theta));
+
+        // std::fstream f;
+        // f.open("/home/kgpkubs/Desktop/angle_debug.txt",std::ios::out|std::ios::app);
+        cout<<"Distance from ball: "<< dis_from_point <<" Angle left: "<< angle <<"\n";
+        
+        if(dist < 4*DRIBBLER_BALL_THRESH && abs(angle)>0.35)
         {
-          Strategy::SkillSet::SkillID sID = SkillSet::GoToBall;
-      	  sParam.GoToBallP.intercept = tParam.GoToBallP.intercept ;
-      	// Execute the selected skill
+          cout << "TurnToPoint\n";
+          //Strategy::SkillSet::SkillID sID = SkillSet::Dribble;
+          Strategy::SkillSet::SkillID sID = SkillSet::TurnToPoint;
+          Strategy::SkillSet *ptr = SkillSet::instance();
+          sParam.TurnToPointP.x = state.ballPos.x ;
+          sParam.TurnToPointP.y = state.ballPos.y ;
+          sParam.TurnToPointP.max_omega = MAX_BOT_OMEGA;
+          //Strategy::SkillSet::SkillID sID = SkillSet::Kick;
+          //sParam.KickP.power = 7.0f;
+          //iState = FINISHED;
+          //return SkillSet::instance()->executeSkill(sID, sParam, state, botID);
+          return ptr->executeSkill(sID, sParam, state, botID);
+        }
+    	  else 
+        {
+          cout << "GoToPoint\n";
+          Strategy::SkillSet::SkillID sID = SkillSet::GoToPoint;
+	        SkillSet::SParam sParam;
+          sParam.GoToPointP.x             = state.ballPos.x ;
+          sParam.GoToPointP.y             = state.ballPos.y ;
+          // sParam.GoToPointP.align         = tParam.PositionP.align;
+          sParam.GoToPointP.finalslope    = Vector2D<int>::angle(ballPos, botPos) ;
+          sParam.GoToPointP.finalVelocity = 0;
+
+          // sParam.GoToBallP.intercept = tParam.GoToBallP.intercept ;
+      	  // Execute the selected skill
       	  Strategy::SkillSet *ptr = SkillSet::instance();
       	  return ptr->executeSkill(sID, sParam, state, botID);
         }
-        else
-        {
-           //Strategy::SkillSet::SkillID sID = SkillSet::Dribble;
-           Strategy::SkillSet::SkillID sID = SkillSet::TurnToPoint;
-           Strategy::SkillSet *ptr = SkillSet::instance();
-           sParam.TurnToPointP.x = state.ballPos.x ;
-           sParam.TurnToPointP.y = state.ballPos.y ;
-           sParam.TurnToPointP.max_omega = MAX_BOT_OMEGA;
-          //Strategy::SkillSet::SkillID sID = SkillSet::Kick;
-        //sParam.KickP.power = 7.0f;
-        //iState = FINISHED;
-        //return SkillSet::instance()->executeSkill(sID, sParam, state, botID);
-          return ptr->executeSkill(sID, sParam, state, botID);
-        }
+        
     }
 
     Tactic::Param TGoToBall::paramFromJSON(string json) {

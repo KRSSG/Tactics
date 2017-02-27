@@ -28,7 +28,7 @@ namespace Strategy
     {
       fstream f;
       f.open("/home/gunjan/catkin_ws/src/play/iState.txt",fstream::out| fstream::app);
-      f<<"finished pass \n";
+      // f<<"finished pass \n";
       f.close();
       return true;
     }
@@ -36,7 +36,7 @@ namespace Strategy
       {
        fstream f;
         f.open("/home/gunjan/catkin_ws/src/play/iState.txt",fstream::out| fstream::app);
-        f<<"not finished pass\n";
+        // f<<"not finished pass\n";
         f.close();
         return false;
       }
@@ -111,7 +111,9 @@ namespace Strategy
     {
       case GOTOBALL:
       {
-        sID = SkillSet::GoToBall;
+        sID = SkillSet::GoToPoint;
+        sParam.GoToPointP.x=state.ballPos.x;
+        sParam.GoToPointP.y=state.ballPos.y;
         return SkillSet::instance()->executeSkill(sID, sParam, state, botID);
         break;
       }

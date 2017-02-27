@@ -54,7 +54,7 @@ namespace Strategy{
 				Vector2D<int> homeBotPos(state.homePos[*itr].x, state.homePos[*itr].y);
 				if(Vector2D<int>::dist(awayBotPos,homeBotPos) < min_dis){
 					best_bot = *itr;
-					min_dis = Vector2D<float>::dist(away_bot, home_bot);
+					//min_dis = Vector2D<float>::dist(away_bot, homeBotPos);
 				}
 			}
 		}

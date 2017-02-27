@@ -24,7 +24,7 @@ namespace Strategy
       Vector2D<int> botpos(bs.homePos[botID].x,bs.homePos[botID].y);
       Vector2D<int> tGoToPoint(tParam.PositionP.x, tParam.PositionP.y);
       float dis_from_point = sqrt((botpos - tGoToPoint).absSq());
-      if(dis_from_point<2*BOT_POINT_THRESH)
+      if(dis_from_point<4*BOT_POINT_THRESH)
         return true;
       return false;
     }
@@ -53,6 +53,7 @@ namespace Strategy
           minv = *it;
         }
       }
+      return 1;
       //printf("%d assigned Position\n", minv);
       return minv;
     } // chooseBestBot

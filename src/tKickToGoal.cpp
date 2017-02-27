@@ -76,6 +76,7 @@ namespace Strategy
       }
     }
     assert(mindis >= 0.0f);
+    return 2;
     return minv;
   }
 
@@ -229,7 +230,7 @@ namespace Strategy
       //randv = randv < 1-THRES ? 1 - randv : randv;
       float angle1 = angleUp * randv + (1-randv) * angleDown;
       float angle2 = angleUp * (1-randv) + randv * angleDown;
-      if(state.homePos[botID].theta <=angle1 && state.homePos[botID].theta >= angle2) {
+      if(state.homePos[botID].theta <=angleMax && state.homePos[botID].theta >= angleMin) {
           iState=KICKING;
           //for(int i = 0; i < obsAngle.size(); i++) {
           //  f << i << "]\t" << obsAngle[i] << endl;
@@ -257,12 +258,48 @@ namespace Strategy
     {
       case GOTOBALL:
       {
-        sID = SkillSet::GoToBall;
-        return SkillSet::instance()->executeSkill(sID, sParam, state, botID);
-        break;
+        float dis_from_point = sqrt((botPos - ballPos).absSq());
+        float angle = normalizeAngle(Vector2D<int>::angle(ballPos, botPos) - (state.homePos[botID].theta));
+
+        // std::fstream f;
+        // f.open("/home/kgpkubs/Desktop/angle_debug.txt",std::ios::out|std::ios::app);
+        cout<<"Distance from ball: "<< dis_from_point <<" Angle left: "<< angle <<"\n";
+        
+        if(dist < 4*DRIBBLER_BALL_THRESH && abs(angle)>1)
+        {
+          cout << "TurnToPoint\n";
+          //Strategy::SkillSet::SkillID sID = SkillSet::Dribble;
+          Strategy::SkillSet::SkillID sID = SkillSet::TurnToPoint;
+          Strategy::SkillSet *ptr = SkillSet::instance();
+          sParam.TurnToPointP.x = state.ballPos.x ;
+          sParam.TurnToPointP.y = state.ballPos.y ;
+          sParam.TurnToPointP.max_omega = MAX_BOT_OMEGA;
+          //Strategy::SkillSet::SkillID sID = SkillSet::Kick;
+          //sParam.KickP.power = 7.0f;
+          //iState = FINISHED;
+          //return SkillSet::instance()->executeSkill(sID, sParam, state, botID);
+          return ptr->executeSkill(sID, sParam, state, botID);
+        }
+        else 
+        {
+          cout << "GoToPoint\n";
+          Strategy::SkillSet::SkillID sID = SkillSet::GoToPoint;
+          SkillSet::SParam sParam;
+          sParam.GoToPointP.x             = state.ballPos.x ;
+          sParam.GoToPointP.y             = state.ballPos.y ;
+          // sParam.GoToPointP.align         = tParam.PositionP.align;
+          sParam.GoToPointP.finalslope    = Vector2D<int>::angle(ballPos, botPos) ;
+          sParam.GoToPointP.finalVelocity = 0;
+
+          // sParam.GoToBallP.intercept = tParam.GoToBallP.intercept ;
+          // Execute the selected skill
+          Strategy::SkillSet *ptr = SkillSet::instance();
+          return ptr->executeSkill(sID, sParam, state, botID);
+        }
       }
       case TURNING:
       {
+        cout << "------------Turing Towards Goal---------------";
         sID = SkillSet::TurnToPoint;
         sParam.TurnToPointP.x = destination.x;
         sParam.TurnToPointP.y = destination.y;
@@ -272,6 +309,7 @@ namespace Strategy
       }  
       case KICKING:
       {
+        cout << "------------KICKING---------------";
         sID = SkillSet::Kick;
         sParam.KickP.power = 7.0f;
         iState = FINISHED;

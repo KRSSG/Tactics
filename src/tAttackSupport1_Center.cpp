@@ -31,7 +31,7 @@ namespace Strategy{
 	    float ballDist = Vector2D<int>::dist(botPos, ballPos);
 	    fstream f;
 	    f.open("/home/gunjan/catkin_ws/src/play/receive.txt",fstream::out|fstream::app);
-	    f<<"here"<<endl;
+	    // f<<"here"<<endl;
 	    if(ballDist<1.2*DRIBBLER_BALL_THRESH) f<<"completed"<<endl;
 	    f.close();
 	    if(ballDist<1.2*DRIBBLER_BALL_THRESH) return true;

@@ -26,13 +26,11 @@ namespace Strategy
     Vector2D<int> ballPos(bs.ballPos.x, bs.ballPos.y);
     float dist = Vector2D<int>::dist(botPos, receivePoint);
     float ballDist = Vector2D<int>::dist(botPos, ballPos);
-    fstream f;
-    f.open("/home/gunjan/catkin_ws/src/play/receive.txt",fstream::out|fstream::app);
+
     if(ballDist<1.6*DRIBBLER_BALL_THRESH && dist<2*BALL_RADIUS) 
-    f.close();
-    if(ballDist<1.6*DRIBBLER_BALL_THRESH && dist<2*BALL_RADIUS) 
-    return true;
-    return false;
+      return true;
+    else
+      return false;
   }
   
   inline bool TReceive::isActiveTactic(void) const {
@@ -105,7 +103,13 @@ namespace Strategy
       }
       case GOTOBALL: 
       {
-        sID = SkillSet::GoToBall;
+
+        sID = SkillSet::GoToPoint;
+        sParam.GoToPointP.x = state.ballPos.x;
+        sParam.GoToPointP.y = state.ballPos.y;
+        sParam.GoToPointP.finalVelocity  = 0;
+        sParam.GoToPointP.finalslope = Vector2D<int>::angle(ballPos, botPos);
+        sParam.GoToPointP.align = false;
         return SkillSet::instance()->executeSkill(sID, sParam, state, botID);
         break;
       }
